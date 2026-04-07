@@ -16,6 +16,8 @@ interface KanbanCardProps {
 export function KanbanCard({ item, index }: KanbanCardProps) {
   const { influencer, campaign } = item
 
+  if (!influencer || !campaign) return null
+
   const primaryHandle =
     influencer.instagram_handle
       ? `@${influencer.instagram_handle}`

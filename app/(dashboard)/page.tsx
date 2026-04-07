@@ -72,13 +72,18 @@ async function KanbanData() {
     .from('campaign_influencers')
     .select(`
       *,
-      influencer:influencers(*),
-      campaign:campaigns(*)
+      influencer:influencers!inner(*),
+      campaign:campaigns!inner(*)
     `)
     .eq('campaign.brand_id', user.id)
     .order('created_at', { ascending: false })
 
-  return <KanbanBoard initialItems={(items as Parameters<typeof KanbanBoard>[0]['initialItems']) ?? []} />
+  // Filter out any rows where the joined records are missing (defensive)
+  const validItems = (items ?? []).filter(
+    (it: { influencer: unknown; campaign: unknown }) => it.influencer && it.campaign
+  )
+
+  return <KanbanBoard initialItems={(validItems as Parameters<typeof KanbanBoard>[0]['initialItems']) ?? []} />
 }
 
 export default function DashboardPage() {
