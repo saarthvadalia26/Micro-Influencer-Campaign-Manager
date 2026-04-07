@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir=false --import-alias=\"@/*\" --yes)",
+      "Bash(cmd.exe /c \"node --version && npm --version && npx --version\")",
+      "Bash(powershell.exe -Command \"node --version\")",
+      "Bash(cmd.exe /c \"node --version\")",
+      "Bash(cmd.exe /c \"npm --version\")",
+      "Bash(cmd.exe /c \"npx --version\")",
+      "Bash(cmd.exe /c \"node -e \\\\\"console.log\\('Node version: ' + process.version\\)\\\\\" && npm -v && npx --version\")",
+      "Bash(powershell.exe -Command \"node -e 'console.log\\(process.version\\)'\")",
+      "Bash(powershell.exe -Command \"\\(Get-Command node -ErrorAction SilentlyContinue\\).Source\")",
+      "Bash(powershell.exe -Command \"Get-Command node,npm,npx -ErrorAction SilentlyContinue | Select-Object Name,Source\")",
+      "Bash(export PATH=\"/d/:$PATH\")",
+      "Bash(npm --version)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(ls -la d:/Saarth/Saarth/check/.env*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/login)",
+      "Bash(powershell.exe -Command \"Stop-Process -Id 2336 -Force -ErrorAction SilentlyContinue\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/signup)",
+      "Bash(curl -s \"https://mcvkgcrdfnyahhjgbuxj.supabase.co/storage/v1/bucket\" -H \"apikey: sb_publishable_0HhEYoZ-Ju-inoDgeKDS_w_U4czqBbm\" -H \"Authorization: Bearer sb_publishable_0HhEYoZ-Ju-inoDgeKDS_w_U4czqBbm\")",
+      "Bash(powershell.exe -Command \"Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | Select-Object OwningProcess\")",
+      "Bash(powershell.exe -Command \"Stop-Process -Id 23836 -Force -ErrorAction SilentlyContinue\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/campaigns)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/campaigns/778b87c1-0c2d-4edf-9146-be80ceb3cc71)",
+      "Bash(curl -s http://localhost:3000/campaigns/ba400e59-fd82-44f3-b794-9f3afa45615a)",
+      "Bash(npx next:*)",
+      "Bash(taskkill //PID 20776 //F)",
+      "Bash(npx kill-port:*)",
+      "Bash(grep -l \"GenericSchema\\\\|PostgrestVersion\" node_modules/@supabase/postgrest-js/dist/cjs/*.d.ts)"
+    ]
+  }
+}
