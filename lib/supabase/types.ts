@@ -15,7 +15,7 @@ export type Database = {
           full_name: string | null
           company_name: string | null
           avatar_url: string | null
-          role: 'brand' | 'admin' | 'influencer'
+          role: 'brand' | 'admin' | 'influencer' | 'super_admin'
           created_at: string
         }
         Insert: {
@@ -23,7 +23,7 @@ export type Database = {
           full_name?: string | null
           company_name?: string | null
           avatar_url?: string | null
-          role?: 'brand' | 'admin'
+          role?: 'brand' | 'admin' | 'super_admin'
           created_at?: string
         }
         Update: {
@@ -31,7 +31,7 @@ export type Database = {
           full_name?: string | null
           company_name?: string | null
           avatar_url?: string | null
-          role?: 'brand' | 'admin'
+          role?: 'brand' | 'admin' | 'super_admin'
           created_at?: string
         }
       }

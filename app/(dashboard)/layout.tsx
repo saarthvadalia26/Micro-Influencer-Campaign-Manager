@@ -11,10 +11,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { LayoutDashboard, Megaphone, Users, LogOut, Settings, Menu } from 'lucide-react'
+import { LayoutDashboard, Megaphone, Users, LogOut, Settings, Menu, ShieldCheck } from 'lucide-react'
 import { SignOutButton } from '@/components/SignOutButton'
 
-const navItems = [
+const baseNavItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/campaigns', label: 'Campaigns', icon: Megaphone },
   { href: '/influencers', label: 'Influencers', icon: Users },
@@ -28,9 +28,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, company_name, avatar_url')
+    .select('full_name, company_name, avatar_url, role')
     .eq('id', user.id)
     .single()
+
+  const isSuperAdmin = (profile as { role?: string } | null)?.role === 'super_admin'
+  const navItems = isSuperAdmin
+    ? [...baseNavItems, { href: '/admin', label: 'Super Admin', icon: ShieldCheck }]
+    : baseNavItems
 
   const initials = profile?.full_name
     ? profile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)

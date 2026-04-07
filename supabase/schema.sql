@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   full_name TEXT,
   company_name TEXT,
   avatar_url TEXT,
-  role TEXT NOT NULL DEFAULT 'brand' CHECK (role IN ('brand', 'admin', 'influencer')),
+  role TEXT NOT NULL DEFAULT 'brand' CHECK (role IN ('brand', 'admin', 'influencer', 'super_admin')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
