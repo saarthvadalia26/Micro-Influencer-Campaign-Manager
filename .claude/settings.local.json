@@ -29,7 +29,9 @@
       "Bash(npx next:*)",
       "Bash(taskkill //PID 20776 //F)",
       "Bash(npx kill-port:*)",
-      "Bash(grep -l \"GenericSchema\\\\|PostgrestVersion\" node_modules/@supabase/postgrest-js/dist/cjs/*.d.ts)"
+      "Bash(grep -l \"GenericSchema\\\\|PostgrestVersion\" node_modules/@supabase/postgrest-js/dist/cjs/*.d.ts)",
+      "Bash(mkdir -p public)",
+      "Bash(node -e ':*)"
     ]
   }
 }
