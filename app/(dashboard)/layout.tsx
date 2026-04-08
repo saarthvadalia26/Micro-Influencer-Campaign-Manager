@@ -14,6 +14,7 @@ import {
 import { LayoutDashboard, Megaphone, Users, LogOut, Settings, Menu, ShieldCheck } from 'lucide-react'
 import { SignOutButton } from '@/components/SignOutButton'
 import { MobileSidebar, type MobileNavItem } from '@/components/MobileSidebar'
+import { ThemeMenuItems } from '@/components/ThemeMenuItems'
 
 const baseNavItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -108,6 +109,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
                   Settings
                 </Link>
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <ThemeMenuItems />
               <DropdownMenuSeparator />
               <SignOutButton />
             </DropdownMenuContent>

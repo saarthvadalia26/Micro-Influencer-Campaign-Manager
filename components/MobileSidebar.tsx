@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { LayoutDashboard, Megaphone, Users, LogOut, Settings, Menu, ShieldCheck, X } from 'lucide-react'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 type IconKey = 'dashboard' | 'campaigns' | 'influencers' | 'admin'
 
@@ -134,6 +135,11 @@ export function MobileSidebar({ navItems, profile, userEmail, initials }: Props)
             <Settings className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
             Settings
           </Link>
+
+          <div className="pt-4">
+            <p className="px-3 pb-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">Theme</p>
+            <ThemeToggle variant="full" />
+          </div>
         </nav>
 
         <div className="p-4 border-t space-y-2">
