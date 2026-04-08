@@ -29,8 +29,14 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  // Public routes: portal login/signup and auth pages
-  if (pathname === '/portal/login' || pathname === '/portal/signup' || pathname.startsWith('/(auth)')) {
+  // Public routes: portal login/signup, password reset pages, and auth pages
+  if (
+    pathname === '/portal/login' ||
+    pathname === '/portal/signup' ||
+    pathname === '/forgot-password' ||
+    pathname === '/reset-password' ||
+    pathname.startsWith('/(auth)')
+  ) {
     return supabaseResponse
   }
 
