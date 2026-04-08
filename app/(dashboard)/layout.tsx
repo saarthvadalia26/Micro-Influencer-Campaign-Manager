@@ -13,11 +13,18 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { LayoutDashboard, Megaphone, Users, LogOut, Settings, Menu, ShieldCheck } from 'lucide-react'
 import { SignOutButton } from '@/components/SignOutButton'
+import { MobileSidebar, type MobileNavItem } from '@/components/MobileSidebar'
 
 const baseNavItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/campaigns', label: 'Campaigns', icon: Megaphone },
   { href: '/influencers', label: 'Influencers', icon: Users },
+]
+
+const baseMobileNavItems: MobileNavItem[] = [
+  { href: '/', label: 'Dashboard', icon: 'dashboard' },
+  { href: '/campaigns', label: 'Campaigns', icon: 'campaigns' },
+  { href: '/influencers', label: 'Influencers', icon: 'influencers' },
 ]
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -36,6 +43,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const navItems = isSuperAdmin
     ? [...baseNavItems, { href: '/admin', label: 'Super Admin', icon: ShieldCheck }]
     : baseNavItems
+  const mobileNavItems: MobileNavItem[] = isSuperAdmin
+    ? [...baseMobileNavItems, { href: '/admin', label: 'Super Admin', icon: 'admin' }]
+    : baseMobileNavItems
 
   const initials = profile?.full_name
     ? profile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
@@ -105,29 +115,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </div>
       </aside>
 
-      {/* Mobile header */}
-      <header className="lg:hidden sticky top-0 z-30 border-b bg-background/95 backdrop-blur-sm px-4 h-14 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">🚀</span>
-          <span className="font-semibold text-sm">Influencer Manager</span>
-        </div>
-        <nav className="flex items-center gap-1">
-          {navItems.map((item) => {
-            const Icon = item.icon
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="p-2 rounded-md hover:bg-muted transition-colors"
-                title={item.label}
-              >
-                <Icon className="h-5 w-5" />
-              </Link>
-            )
-          })}
-          <SignOutButton iconOnly />
-        </nav>
-      </header>
+      {/* Mobile sidebar + header */}
+      <MobileSidebar
+        navItems={mobileNavItems}
+        profile={profile as { full_name?: string | null; company_name?: string | null; avatar_url?: string | null } | null}
+        userEmail={user.email ?? ''}
+        initials={initials}
+      />
 
       {/* Main content */}
       <main className="lg:pl-64 min-h-screen">
