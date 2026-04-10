@@ -9,14 +9,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
 import { Label } from '@/components/ui/label'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
 import { Loader2, UserPlus } from 'lucide-react'
 
 export default function SignupPage() {
@@ -45,7 +37,6 @@ export default function SignupPage() {
     if (error) {
       toast.error(error.message)
     } else if (data.user) {
-      // Create profile row manually (no DB trigger needed)
       await supabase.from('profiles').insert({
         id: data.user.id,
         full_name: fullName,
@@ -60,40 +51,41 @@ export default function SignupPage() {
   }
 
   return (
-    <Card className="border-0 shadow-2xl bg-white/5 backdrop-blur-sm border border-white/10">
-      <CardHeader>
-        <CardTitle className="text-white">Create Account</CardTitle>
-        <CardDescription className="text-slate-400">
-          Start managing your influencer campaigns
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSignup} className="space-y-4">
+    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] ring-1 ring-inset ring-white/[0.05]">
+      <div className="absolute -top-px left-8 right-8 h-px bg-gradient-to-r from-transparent via-violet-400/40 to-transparent" />
+
+      <div className="p-8">
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-white">Create Account</h2>
+          <p className="text-sm text-violet-300/50 mt-1">Start managing your influencer campaigns</p>
+        </div>
+
+        <form onSubmit={handleSignup} className="space-y-5">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label htmlFor="fullName" className="text-slate-300">Full Name</Label>
+              <Label htmlFor="fullName" className="text-sm text-violet-200/70">Full Name</Label>
               <Input
                 id="fullName"
                 placeholder="Jane Smith"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
-                className="bg-white/10 border-white/20 text-white placeholder:text-slate-500"
+                className="bg-white/[0.06] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-400/50 focus:ring-violet-400/20 transition-colors h-11"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="companyName" className="text-slate-300">Company</Label>
+              <Label htmlFor="companyName" className="text-sm text-violet-200/70">Company</Label>
               <Input
                 id="companyName"
                 placeholder="Acme Inc."
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
-                className="bg-white/10 border-white/20 text-white placeholder:text-slate-500"
+                className="bg-white/[0.06] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-400/50 focus:ring-violet-400/20 transition-colors h-11"
               />
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-slate-300">Email</Label>
+            <Label htmlFor="email" className="text-sm text-violet-200/70">Email</Label>
             <Input
               id="email"
               type="email"
@@ -101,34 +93,39 @@ export default function SignupPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="bg-white/10 border-white/20 text-white placeholder:text-slate-500"
+              className="bg-white/[0.06] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-400/50 focus:ring-violet-400/20 transition-colors h-11"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-slate-300">Password</Label>
+            <Label htmlFor="password" className="text-sm text-violet-200/70">Password</Label>
             <PasswordInput
               id="password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="bg-white/10 border-white/20 text-white placeholder:text-slate-500"
+              className="bg-white/[0.06] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-400/50 focus:ring-violet-400/20 transition-colors h-11"
             />
           </div>
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button
+            type="submit"
+            className="w-full h-11 bg-gradient-to-r from-fuchsia-500 to-violet-600 hover:from-fuchsia-400 hover:to-violet-500 text-white font-medium shadow-lg shadow-fuchsia-500/25 hover:shadow-fuchsia-500/40 transition-all duration-300 border-0"
+            disabled={isLoading}
+          >
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
             Create Account
           </Button>
         </form>
-      </CardContent>
-      <CardFooter className="justify-center">
-        <p className="text-sm text-slate-400">
+      </div>
+
+      <div className="border-t border-white/[0.06] px-8 py-4 text-center">
+        <p className="text-sm text-violet-300/40">
           Already have an account?{' '}
-          <Link href="/login" className="text-blue-400 hover:text-blue-300 font-medium">
+          <Link href="/login" className="text-violet-400 hover:text-violet-300 font-medium transition-colors">
             Sign in
           </Link>
         </p>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   )
 }
