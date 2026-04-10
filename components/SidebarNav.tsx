@@ -4,19 +4,27 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { LayoutDashboard, Megaphone, Users, ShieldCheck, type LucideIcon } from 'lucide-react'
 
-type NavItem = {
-  href: string
-  label: string
-  icon: LucideIcon
+const iconMap: Record<string, LucideIcon> = {
+  dashboard: LayoutDashboard,
+  campaigns: Megaphone,
+  influencers: Users,
+  admin: ShieldCheck,
 }
 
-export function SidebarNav({ items }: { items: NavItem[] }) {
+export type SidebarNavItem = {
+  href: string
+  label: string
+  icon: string
+}
+
+export function SidebarNav({ items }: { items: SidebarNavItem[] }) {
   const pathname = usePathname()
 
   return (
     <>
       {items.map((item) => {
-        const Icon = item.icon
+        const Icon = iconMap[item.icon]
+        if (!Icon) return null
         const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
 
         return (

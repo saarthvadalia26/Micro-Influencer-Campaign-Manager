@@ -16,13 +16,13 @@ import { Logo } from '@/components/Logo'
 import { SignOutButton } from '@/components/SignOutButton'
 import { MobileSidebar, type MobileNavItem } from '@/components/MobileSidebar'
 import { ThemeMenuItems } from '@/components/ThemeMenuItems'
-import { SidebarNav } from '@/components/SidebarNav'
+import { SidebarNav, type SidebarNavItem } from '@/components/SidebarNav'
 import { PageTransition } from '@/components/PageTransition'
 
-const baseNavItems = [
-  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/campaigns', label: 'Campaigns', icon: Megaphone },
-  { href: '/influencers', label: 'Influencers', icon: Users },
+const baseNavItems: SidebarNavItem[] = [
+  { href: '/', label: 'Dashboard', icon: 'dashboard' },
+  { href: '/campaigns', label: 'Campaigns', icon: 'campaigns' },
+  { href: '/influencers', label: 'Influencers', icon: 'influencers' },
 ]
 
 const baseMobileNavItems: MobileNavItem[] = [
@@ -44,8 +44,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .single()
 
   const isSuperAdmin = (profile as { role?: string } | null)?.role === 'super_admin'
-  const navItems = isSuperAdmin
-    ? [...baseNavItems, { href: '/admin', label: 'Super Admin', icon: ShieldCheck }]
+  const navItems: SidebarNavItem[] = isSuperAdmin
+    ? [...baseNavItems, { href: '/admin', label: 'Super Admin', icon: 'admin' }]
     : baseNavItems
   const mobileNavItems: MobileNavItem[] = isSuperAdmin
     ? [...baseMobileNavItems, { href: '/admin', label: 'Super Admin', icon: 'admin' }]
