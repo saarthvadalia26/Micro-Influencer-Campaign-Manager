@@ -16,6 +16,8 @@ import { Logo } from '@/components/Logo'
 import { SignOutButton } from '@/components/SignOutButton'
 import { MobileSidebar, type MobileNavItem } from '@/components/MobileSidebar'
 import { ThemeMenuItems } from '@/components/ThemeMenuItems'
+import { SidebarNav } from '@/components/SidebarNav'
+import { PageTransition } from '@/components/PageTransition'
 
 const baseNavItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -62,12 +64,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
       </div>
 
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 border-r bg-card/80 backdrop-blur-xl hidden lg:flex flex-col z-30">
-        <div className="p-6 border-b">
+      <aside className="fixed left-0 top-0 h-full w-64 border-r border-white/[0.08] bg-white/[0.03] backdrop-blur-xl hidden lg:flex flex-col z-30">
+        <div className="p-6 border-b border-white/[0.08]">
           <div className="flex items-center gap-2">
             <Logo size={32} />
             <div>
-              <p className="font-semibold text-sm leading-none">Influencer Manager</p>
+              <p className="font-semibold text-sm leading-none text-gradient-brand">Influencer Manager</p>
               {profile?.company_name && (
                 <p className="text-xs text-muted-foreground mt-0.5">{profile.company_name}</p>
               )}
@@ -76,22 +78,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
-          {navItems.map((item) => {
-            const Icon = item.icon
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="flex items-center gap-3 px-3 py-2 rounded-md text-sm hover:bg-muted transition-colors group"
-              >
-                <Icon className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-                {item.label}
-              </Link>
-            )
-          })}
+          <SidebarNav items={navItems} />
         </nav>
 
-        <div className="p-4 border-t">
+        <div className="p-4 border-t border-white/[0.08]">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-3 w-full rounded-md px-3 py-2 hover:bg-muted transition-colors text-left">
@@ -134,7 +124,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
       {/* Main content */}
       <main className="lg:pl-64 min-h-screen relative z-10">
         <div className="max-w-7xl mx-auto p-4 lg:p-8">
-          {children}
+          <PageTransition>
+            {children}
+          </PageTransition>
         </div>
       </main>
     </div>
