@@ -19,8 +19,8 @@ export function Logo({ size = 32, className }: { size?: number; className?: stri
       <circle cx="50" cy="15" r="5.5" fill="#FBBF24" />
       <defs>
         <linearGradient id="logo-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#3B82F6" />
-          <stop offset="1" stopColor="#1D4ED8" />
+          <stop stopColor="#10B981" />
+          <stop offset="1" stopColor="#059669" />
         </linearGradient>
       </defs>
     </svg>
