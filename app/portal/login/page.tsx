@@ -2,7 +2,6 @@
 
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -59,7 +58,7 @@ function PortalLoginForm() {
         <Card>
           <CardHeader>
             <CardTitle>Sign In</CardTitle>
-            <CardDescription>Use your creator account credentials</CardDescription>
+            <CardDescription>Use the credentials provided by your brand manager</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
@@ -92,13 +91,7 @@ function PortalLoginForm() {
           </CardContent>
           <CardFooter className="justify-center">
             <p className="text-sm text-muted-foreground">
-              Don&apos;t have an account?{' '}
-              <Link
-                href={`/portal/signup?redirect=${encodeURIComponent(redirectTo)}`}
-                className="text-primary font-medium hover:underline"
-              >
-                Sign up
-              </Link>
+              Use the credentials provided by your brand manager.
             </p>
           </CardFooter>
         </Card>

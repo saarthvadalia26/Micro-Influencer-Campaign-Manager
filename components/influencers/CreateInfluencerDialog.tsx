@@ -24,6 +24,26 @@ export function CreateInfluencerDialog({ userId }: { userId: string }) {
 
   const handleSubmit = async (values: InfluencerFormValues) => {
     setIsLoading(true)
+
+    // Create portal auth account if email and password provided
+    if (values.email && values.password) {
+      const res = await fetch('/api/create-portal-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+          full_name: values.name,
+        }),
+      })
+      const result = await res.json()
+      if (!res.ok) {
+        toast.error(result.error || 'Failed to create portal account')
+        setIsLoading(false)
+        return
+      }
+    }
+
     const { error } = await supabase.from('influencers').insert({
       brand_id: userId,
       name: values.name,
@@ -61,7 +81,7 @@ export function CreateInfluencerDialog({ userId }: { userId: string }) {
         <DialogHeader>
           <DialogTitle>Add New Influencer</DialogTitle>
         </DialogHeader>
-        <InfluencerForm onSubmit={handleSubmit} isLoading={isLoading} submitLabel="Add Influencer" />
+        <InfluencerForm onSubmit={handleSubmit} isLoading={isLoading} submitLabel="Add Influencer" showPassword />
       </DialogContent>
     </Dialog>
   )

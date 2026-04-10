@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import type { Influencer } from '@/lib/supabase/types'
+import { PasswordInput } from '@/components/ui/password-input'
 import { Loader2, Instagram, Youtube } from 'lucide-react'
 
 const NICHES = [
@@ -21,6 +22,7 @@ interface InfluencerFormProps {
   onSubmit: (values: InfluencerFormValues) => Promise<void>
   isLoading?: boolean
   submitLabel?: string
+  showPassword?: boolean
 }
 
 export function InfluencerForm({
@@ -28,12 +30,14 @@ export function InfluencerForm({
   onSubmit,
   isLoading,
   submitLabel = 'Save Influencer',
+  showPassword = false,
 }: InfluencerFormProps) {
   const form = useForm<InfluencerFormValues>({
     resolver: zodResolver(influencerSchema),
     defaultValues: {
       name: defaultValues?.name ?? '',
       email: defaultValues?.email ?? '',
+      password: '',
       instagram_handle: defaultValues?.instagram_handle ?? '',
       tiktok_handle: defaultValues?.tiktok_handle ?? '',
       youtube_handle: defaultValues?.youtube_handle ?? '',
@@ -63,6 +67,16 @@ export function InfluencerForm({
             <p className="text-sm text-destructive">{form.formState.errors.email.message}</p>
           )}
         </div>
+        {showPassword && (
+          <div className="space-y-2">
+            <Label htmlFor="password">Portal Password</Label>
+            <PasswordInput id="password" placeholder="Min 6 characters" {...form.register('password')} />
+            {form.formState.errors.password && (
+              <p className="text-sm text-destructive">{form.formState.errors.password.message}</p>
+            )}
+            <p className="text-xs text-muted-foreground">Share this with the influencer for portal login</p>
+          </div>
+        )}
       </div>
 
       <div className="space-y-3">
