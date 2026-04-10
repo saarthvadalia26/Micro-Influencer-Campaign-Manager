@@ -25,7 +25,7 @@ export function SignOutButton({ iconOnly }: { iconOnly?: boolean }) {
   }
 
   return (
-    <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive focus:text-destructive">
+    <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-500 focus:text-red-500 focus:bg-red-500/10">
       <LogOut className="h-4 w-4 mr-2" />
       Sign Out
     </DropdownMenuItem>
