@@ -54,9 +54,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
     : user.email?.[0].toUpperCase() ?? 'U'
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Atmospheric radial gradients */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-0 left-0 w-[800px] h-[800px] rounded-full bg-indigo-600/[0.15] blur-[150px] -translate-x-1/3 -translate-y-1/3" />
+        <div className="absolute bottom-0 right-0 w-[700px] h-[700px] rounded-full bg-violet-700/[0.15] blur-[150px] translate-x-1/4 translate-y-1/4" />
+      </div>
+
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 border-r bg-card hidden lg:flex flex-col z-30">
+      <aside className="fixed left-0 top-0 h-full w-64 border-r bg-card/80 backdrop-blur-xl hidden lg:flex flex-col z-30">
         <div className="p-6 border-b">
           <div className="flex items-center gap-2">
             <Logo size={32} />
@@ -126,7 +132,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       />
 
       {/* Main content */}
-      <main className="lg:pl-64 min-h-screen">
+      <main className="lg:pl-64 min-h-screen relative z-10">
         <div className="max-w-7xl mx-auto p-4 lg:p-8">
           {children}
         </div>

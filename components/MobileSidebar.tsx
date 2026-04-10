@@ -65,7 +65,7 @@ export function MobileSidebar({ navItems, profile, userEmail, initials }: Props)
 
   return (
     <>
-      <header className="lg:hidden sticky top-0 z-30 border-b bg-background/95 backdrop-blur-sm px-4 h-14 flex items-center justify-between">
+      <header className="lg:hidden sticky top-0 z-30 border-b bg-card/80 backdrop-blur-xl px-4 h-14 flex items-center justify-between">
         <button
           onClick={() => setOpen(true)}
           className="p-2 -ml-2 rounded-md hover:bg-muted transition-colors"
@@ -90,7 +90,7 @@ export function MobileSidebar({ navItems, profile, userEmail, initials }: Props)
 
       {/* Drawer */}
       <aside
-        className={`lg:hidden fixed left-0 top-0 h-full w-72 max-w-[80vw] bg-card border-r z-50 flex flex-col transform transition-transform duration-300 ease-out ${
+        className={`lg:hidden fixed left-0 top-0 h-full w-72 max-w-[80vw] bg-card/95 backdrop-blur-xl border-r z-50 flex flex-col transform transition-transform duration-300 ease-out ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
