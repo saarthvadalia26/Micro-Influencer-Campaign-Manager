@@ -1,9 +1,11 @@
 import { createServiceClient } from '@/lib/supabase/service'
-import { notFound } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+import { notFound, redirect } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { PortalContent } from '@/components/portal/PortalContent'
+import { PortalSignOutButton } from '@/components/portal/PortalSignOutButton'
 import { format } from 'date-fns'
 import { Package, Calendar, FileText } from 'lucide-react'
 
@@ -11,9 +13,18 @@ interface PageProps { params: Promise<{ token: string }> }
 
 export default async function PortalPage({ params }: PageProps) {
   const { token } = await params
+
+  // Check if user is logged in
+  const authClient = await createClient()
+  const { data: { user } } = await authClient.auth.getUser()
+  if (!user) {
+    redirect(`/portal/login?redirect=${encodeURIComponent(`/portal/${token}`)}`)
+  }
+
+  // Use service role to bypass RLS for data fetching
   const supabase = createServiceClient()
 
-  // Fetch the campaign_influencer by token (token acts as access key)
+  // Fetch the campaign_influencer by token
   const { data: ci } = await supabase
     .from('campaign_influencers')
     .select(`
@@ -50,7 +61,10 @@ export default async function PortalPage({ params }: PageProps) {
             <p className="font-semibold text-sm">Creator Portal</p>
             <p className="text-xs text-muted-foreground">{ci.campaign.title}</p>
           </div>
-          <span className="text-xs text-muted-foreground hidden sm:inline">{ci.influencer.email}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground hidden sm:inline">{user.email}</span>
+            <PortalSignOutButton redirectTo={`/portal/login?redirect=${encodeURIComponent(`/portal/${token}`)}`} />
+          </div>
         </div>
       </header>
 
