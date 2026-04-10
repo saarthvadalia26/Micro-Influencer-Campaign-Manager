@@ -1,10 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { PortalContent } from '@/components/portal/PortalContent'
-import { PortalSignOutButton } from '@/components/portal/PortalSignOutButton'
 import { format } from 'date-fns'
 import { Package, Calendar, FileText } from 'lucide-react'
 
@@ -14,13 +13,7 @@ export default async function PortalPage({ params }: PageProps) {
   const { token } = await params
   const supabase = await createClient()
 
-  // Check if user is logged in
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    redirect(`/portal/login?redirect=${encodeURIComponent(`/portal/${token}`)}`)
-  }
-
-  // Fetch the campaign_influencer by token
+  // Fetch the campaign_influencer by token (token acts as access key)
   const { data: ci } = await supabase
     .from('campaign_influencers')
     .select(`
@@ -36,8 +29,6 @@ export default async function PortalPage({ params }: PageProps) {
   if (!ci || !ci.campaign || !ci.influencer) {
     notFound()
   }
-
-  const userEmail = user.email?.toLowerCase()
 
   const { data: drafts } = await supabase
     .from('content_drafts')
@@ -59,10 +50,7 @@ export default async function PortalPage({ params }: PageProps) {
             <p className="font-semibold text-sm">Creator Portal</p>
             <p className="text-xs text-muted-foreground">{ci.campaign.title}</p>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground hidden sm:inline">{userEmail}</span>
-            <PortalSignOutButton redirectTo={`/portal/login?redirect=${encodeURIComponent(`/portal/${token}`)}`} />
-          </div>
+          <span className="text-xs text-muted-foreground hidden sm:inline">{ci.influencer.email}</span>
         </div>
       </header>
 
