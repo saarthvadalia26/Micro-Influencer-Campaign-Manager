@@ -12,6 +12,7 @@ import {
   Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,
 } from '@/components/ui/card'
 import { Loader2, LogIn } from 'lucide-react'
+import { Logo } from '@/components/Logo'
 
 export default function PortalLoginPage() {
   return (
@@ -48,8 +49,8 @@ function PortalLoginForm() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary mb-4">
-            <span className="text-2xl">🎨</span>
+          <div className="inline-flex items-center justify-center mb-4">
+            <Logo size={48} />
           </div>
           <h1 className="text-2xl font-bold">Creator Portal</h1>
           <p className="text-muted-foreground text-sm mt-1">Sign in to view your campaigns and submit content</p>

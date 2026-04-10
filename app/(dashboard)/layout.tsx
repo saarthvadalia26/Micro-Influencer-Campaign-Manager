@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { LayoutDashboard, Megaphone, Users, LogOut, Settings, Menu, ShieldCheck } from 'lucide-react'
+import { Logo } from '@/components/Logo'
 import { SignOutButton } from '@/components/SignOutButton'
 import { MobileSidebar, type MobileNavItem } from '@/components/MobileSidebar'
 import { ThemeMenuItems } from '@/components/ThemeMenuItems'
@@ -58,9 +59,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <aside className="fixed left-0 top-0 h-full w-64 border-r bg-card hidden lg:flex flex-col z-30">
         <div className="p-6 border-b">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-lg">
-              🚀
-            </div>
+            <Logo size={32} />
             <div>
               <p className="font-semibold text-sm leading-none">Influencer Manager</p>
               {profile?.company_name && (

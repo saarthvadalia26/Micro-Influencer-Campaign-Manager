@@ -8,6 +8,7 @@ import { PortalContent } from '@/components/portal/PortalContent'
 import { PortalSignOutButton } from '@/components/portal/PortalSignOutButton'
 import { format } from 'date-fns'
 import { Package, Calendar, FileText } from 'lucide-react'
+import { Logo } from '@/components/Logo'
 
 interface PageProps { params: Promise<{ token: string }> }
 
@@ -54,9 +55,7 @@ export default async function PortalPage({ params }: PageProps) {
       {/* Header */}
       <header className="border-b bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-lg">
-            🎨
-          </div>
+          <Logo size={32} />
           <div className="flex-1">
             <p className="font-semibold text-sm">Creator Portal</p>
             <p className="text-xs text-muted-foreground">{ci.campaign.title}</p>

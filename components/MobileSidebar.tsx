@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { LayoutDashboard, Megaphone, Users, LogOut, Settings, Menu, ShieldCheck, X } from 'lucide-react'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { Logo } from '@/components/Logo'
 
 type IconKey = 'dashboard' | 'campaigns' | 'influencers' | 'admin'
 
@@ -73,7 +74,7 @@ export function MobileSidebar({ navItems, profile, userEmail, initials }: Props)
           <Menu className="h-5 w-5" />
         </button>
         <div className="flex items-center gap-2">
-          <span className="text-xl">🚀</span>
+          <Logo size={28} />
           <span className="font-semibold text-sm">Influencer Manager</span>
         </div>
         <div className="w-9" />
@@ -95,9 +96,7 @@ export function MobileSidebar({ navItems, profile, userEmail, initials }: Props)
       >
         <div className="p-6 border-b flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-lg">
-              🚀
-            </div>
+            <Logo size={32} />
             <div>
               <p className="font-semibold text-sm leading-none">Influencer Manager</p>
               {profile?.company_name && (
