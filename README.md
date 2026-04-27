@@ -116,3 +116,5 @@ lib/
 supabase/
   schema.sql             — Full database schema
 ```
+👨‍💻 Author
+Saarth Vadalia - GitHub
