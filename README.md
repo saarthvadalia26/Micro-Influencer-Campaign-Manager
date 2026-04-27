@@ -116,5 +116,4 @@ lib/
 supabase/
   schema.sql             — Full database schema
 ```
-👨‍💻 Author
-Saarth Vadalia
+👨‍💻 Author - Saarth Vadalia
