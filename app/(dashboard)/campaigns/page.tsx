@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getUser } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -12,14 +12,20 @@ import { CreateCampaignDialog } from '@/components/campaigns/CreateCampaignDialo
 import { format } from 'date-fns'
 
 export default async function CampaignsPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user } } = await getUser()
   if (!user) return null
 
+  const supabase = await createClient()
   const { data: campaigns } = await supabase
     .from('campaigns')
     .select(`
-      *,
+      id,
+      title,
+      description,
+      status,
+      budget,
+      start_date,
+      end_date,
       campaign_influencers(id, status)
     `)
     .eq('brand_id', user.id)

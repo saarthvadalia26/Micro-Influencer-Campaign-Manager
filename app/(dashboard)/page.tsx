@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getUser } from '@/lib/supabase/server'
 import { KanbanBoard } from '@/components/kanban/KanbanBoard'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -7,10 +7,10 @@ import { Megaphone, Users, DollarSign, TrendingUp } from 'lucide-react'
 import { Suspense } from 'react'
 
 async function DashboardStats() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user } } = await getUser()
   if (!user) return null
 
+  const supabase = await createClient()
   const [campaignsResult, ciResult] = await Promise.all([
     supabase
       .from('campaigns')
@@ -18,7 +18,7 @@ async function DashboardStats() {
       .eq('brand_id', user.id),
     supabase
       .from('campaign_influencers')
-      .select('id, agreed_rate, campaign:campaigns!inner(brand_id), payments(amount)')
+      .select('id, agreed_rate, campaign:campaigns!inner(id, brand_id), payments(amount)')
       .eq('campaign.brand_id', user.id),
   ])
 
@@ -64,16 +64,18 @@ async function DashboardStats() {
 }
 
 async function KanbanData() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user } } = await getUser()
   if (!user) return null
 
+  const supabase = await createClient()
   const { data: items } = await supabase
     .from('campaign_influencers')
     .select(`
-      *,
-      influencer:influencers!inner(*),
-      campaign:campaigns!inner(*)
+      id,
+      status,
+      agreed_rate,
+      influencer:influencers!inner(id, name, instagram_handle, tiktok_handle, youtube_handle, niche),
+      campaign:campaigns!inner(id, title)
     `)
     .eq('campaign.brand_id', user.id)
     .order('created_at', { ascending: false })

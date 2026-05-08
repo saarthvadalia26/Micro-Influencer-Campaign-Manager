@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getUser } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -23,9 +23,10 @@ type BrandRow = {
 
 export default async function SuperAdminPage() {
   // 1. Verify the current user is a super_admin (server-side)
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user } } = await getUser()
   if (!user) notFound()
+
+  const supabase = await createClient()
 
   const { data: profile } = await supabase
     .from('profiles')

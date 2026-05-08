@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getUser } from '@/lib/supabase/server'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -8,13 +8,13 @@ import Link from 'next/link'
 import { CreateInfluencerDialog } from '@/components/influencers/CreateInfluencerDialog'
 
 export default async function InfluencersPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user } } = await getUser()
   if (!user) return null
 
+  const supabase = await createClient()
   const { data: influencers } = await supabase
     .from('influencers')
-    .select('*')
+    .select('id, name, location, niche, instagram_handle, tiktok_handle, youtube_handle, follower_count, avg_engagement_rate, rate_per_post')
     .eq('brand_id', user.id)
     .order('name')
 

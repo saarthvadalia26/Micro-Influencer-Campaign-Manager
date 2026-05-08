@@ -1,5 +1,5 @@
 import { createServiceClient } from '@/lib/supabase/service'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getUser } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,8 +16,7 @@ export default async function PortalPage({ params }: PageProps) {
   const { token } = await params
 
   // Check if user is logged in
-  const authClient = await createClient()
-  const { data: { user } } = await authClient.auth.getUser()
+  const { data: { user } } = await getUser()
   if (!user) {
     redirect(`/portal/login?redirect=${encodeURIComponent(`/portal/${token}`)}`)
   }

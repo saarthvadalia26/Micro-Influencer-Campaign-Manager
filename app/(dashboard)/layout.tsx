@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getUser } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -32,11 +32,11 @@ const baseMobileNavItems: MobileNavItem[] = [
 ]
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user } } = await getUser()
 
   if (!user) redirect('/login')
 
+  const supabase = await createClient()
   const { data: profile } = await supabase
     .from('profiles')
     .select('full_name, company_name, avatar_url, role')
