@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
+import { LayoutDashboard, Megaphone, Users, ShieldCheck, type LucideIcon } from 'lucide-react'
 
 const iconMap: Record<string, LucideIcon> = {
   dashboard: LayoutDashboard,

@@ -9,6 +9,7 @@ import { PortalSignOutButton } from '@/components/portal/PortalSignOutButton'
 import { format } from 'date-fns'
 import { Package, Calendar, FileText } from 'lucide-react'
 import { Logo } from '@/components/Logo'
+import { AnimatedWrapper } from '@/components/portal/AnimatedWrapper'
 
 interface PageProps { params: Promise<{ token: string }> }
 
@@ -50,7 +51,12 @@ export default async function PortalPage({ params }: PageProps) {
   const latestDraft = drafts?.[0] ?? null
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Atmospheric radial gradients */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full bg-indigo-600/[0.08] blur-[120px] -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-violet-700/[0.08] blur-[120px] translate-x-1/4 translate-y-1/4" />
+      </div>
       {/* Header */}
       <header className="border-b bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-3">
@@ -66,67 +72,73 @@ export default async function PortalPage({ params }: PageProps) {
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+      <main className="max-w-2xl mx-auto px-4 py-8 space-y-6 relative z-10">
         {/* Welcome */}
-        <div>
-          <h1 className="text-2xl font-bold mb-1">
-            Hey {ci.influencer.name}! 👋
-          </h1>
-          <p className="text-muted-foreground">
-            Here&apos;s everything you need for the <strong>{ci.campaign.title}</strong> campaign.
-          </p>
-        </div>
+        <AnimatedWrapper>
+          <div>
+            <h1 className="text-2xl font-bold mb-1">
+              Hey {ci.influencer.name}! 👋
+            </h1>
+            <p className="text-muted-foreground">
+              Here&apos;s everything you need for the <strong>{ci.campaign.title}</strong> campaign.
+            </p>
+          </div>
+        </AnimatedWrapper>
 
         {/* Campaign Brief */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <FileText className="h-4 w-4 text-primary" />
-              Campaign Brief
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {ci.campaign.description ? (
-              <p className="text-sm whitespace-pre-wrap">{ci.campaign.description}</p>
-            ) : (
-              <p className="text-sm text-muted-foreground italic">No brief provided yet.</p>
-            )}
-
-            <Separator />
-
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              {ci.campaign.start_date && (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Calendar className="h-4 w-4" />
-                  <span>
-                    {format(new Date(ci.campaign.start_date), 'MMM d, yyyy')}
-                    {ci.campaign.end_date && ` – ${format(new Date(ci.campaign.end_date), 'MMM d, yyyy')}`}
-                  </span>
-                </div>
+        <AnimatedWrapper delay={0.1}>
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <FileText className="h-4 w-4 text-primary" />
+                Campaign Brief
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {ci.campaign.description ? (
+                <p className="text-sm whitespace-pre-wrap">{ci.campaign.description}</p>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">No brief provided yet.</p>
               )}
-              {ci.agreed_rate > 0 && (
-                <div className="font-medium text-emerald-600">
-                  Agreed rate: ${ci.agreed_rate.toFixed(2)}
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+
+              <Separator />
+
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                {ci.campaign.start_date && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Calendar className="h-4 w-4" />
+                    <span>
+                      {format(new Date(ci.campaign.start_date), 'MMM d, yyyy')}
+                      {ci.campaign.end_date && ` – ${format(new Date(ci.campaign.end_date), 'MMM d, yyyy')}`}
+                    </span>
+                  </div>
+                )}
+                {ci.agreed_rate > 0 && (
+                  <div className="font-medium text-emerald-600">
+                    Agreed rate: ${ci.agreed_rate.toFixed(2)}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </AnimatedWrapper>
 
         {/* Product Tracking */}
         {ci.product_tracking_number && (
-          <Card>
-            <CardContent className="p-4 flex items-center gap-3">
-              <Package className="h-5 w-5 text-orange-500 shrink-0" />
-              <div>
-                <p className="text-sm font-medium">Product Shipped!</p>
-                <p className="text-xs text-muted-foreground">
-                  Tracking: <span className="font-mono">{ci.product_tracking_number}</span>
-                </p>
-              </div>
-              <Badge className="ml-auto bg-orange-100 text-orange-700">In Transit</Badge>
-            </CardContent>
-          </Card>
+          <AnimatedWrapper delay={0.2}>
+            <Card>
+              <CardContent className="p-4 flex items-center gap-3">
+                <Package className="h-5 w-5 text-orange-500 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium">Product Shipped!</p>
+                  <p className="text-xs text-muted-foreground">
+                    Tracking: <span className="font-mono">{ci.product_tracking_number}</span>
+                  </p>
+                </div>
+                <Badge className="ml-auto bg-orange-100 text-orange-700">In Transit</Badge>
+              </CardContent>
+            </Card>
+          </AnimatedWrapper>
         )}
 
         {/* Previous feedback / status */}

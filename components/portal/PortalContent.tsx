@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { ContentUploadForm } from './ContentUploadForm'
@@ -96,7 +97,11 @@ export function PortalContent({ campaignInfluencerId, latestDraftStatus, existin
   // If content is approved and URL submitted — all done
   if (hasApprovedDraft && urlSubmitted) {
     return (
-      <div className="space-y-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-6"
+      >
         <Card className="border-green-200 dark:border-green-800">
           <CardContent className="flex flex-col items-center py-10 text-center">
             <CheckCircle className="h-12 w-12 text-green-500 mb-4" />
@@ -132,14 +137,18 @@ export function PortalContent({ campaignInfluencerId, latestDraftStatus, existin
             />
           </CardContent>
         </Card>
-      </div>
+      </motion.div>
     )
   }
 
   // If content is approved — show URL submission + upload form
   if (hasApprovedDraft) {
     return (
-      <div className="space-y-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-6"
+      >
         <Card className="border-green-200 dark:border-green-800">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
@@ -193,13 +202,17 @@ export function PortalContent({ campaignInfluencerId, latestDraftStatus, existin
             />
           </CardContent>
         </Card>
-      </div>
+      </motion.div>
     )
   }
 
   // Default: show previous submissions + upload form
   return (
-    <div className="space-y-6">
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6"
+    >
       {/* Previous submissions */}
       {localDrafts.length > 0 && (
         <Card>
@@ -207,33 +220,41 @@ export function PortalContent({ campaignInfluencerId, latestDraftStatus, existin
             <CardTitle className="text-base">Your Submissions ({localDrafts.length})</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {localDrafts.map((draft) => (
-              <div key={draft.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-                <div className="shrink-0">
-                  {draft.file_type === 'image' ? (
-                    <FileImage className="h-5 w-5 text-blue-500" />
-                  ) : (
-                    <FileVideo className="h-5 w-5 text-purple-500" />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {statusBadge(draft.status)}
-                    <span className="text-xs text-muted-foreground">
-                      {format(new Date(draft.submitted_at), 'MMM d, yyyy h:mm a')}
-                    </span>
+            <AnimatePresence mode="popLayout">
+              {localDrafts.map((draft, idx) => (
+                <motion.div 
+                  key={draft.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: idx * 0.05 }}
+                  className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg"
+                >
+                  <div className="shrink-0">
+                    {draft.file_type === 'image' ? (
+                      <FileImage className="h-5 w-5 text-blue-500" />
+                    ) : (
+                      <FileVideo className="h-5 w-5 text-purple-500" />
+                    )}
                   </div>
-                  {draft.caption_draft && (
-                    <p className="text-xs text-muted-foreground mt-1 truncate">{draft.caption_draft}</p>
-                  )}
-                  {draft.status === 'revision_requested' && draft.brand_feedback && (
-                    <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
-                      Feedback: {draft.brand_feedback}
-                    </p>
-                  )}
-                </div>
-              </div>
-            ))}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {statusBadge(draft.status)}
+                      <span className="text-xs text-muted-foreground">
+                        {format(new Date(draft.submitted_at), 'MMM d, yyyy h:mm a')}
+                      </span>
+                    </div>
+                    {draft.caption_draft && (
+                      <p className="text-xs text-muted-foreground mt-1 truncate">{draft.caption_draft}</p>
+                    )}
+                    {draft.status === 'revision_requested' && draft.brand_feedback && (
+                      <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                        Feedback: {draft.brand_feedback}
+                      </p>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </CardContent>
         </Card>
       )}
@@ -265,6 +286,6 @@ export function PortalContent({ campaignInfluencerId, latestDraftStatus, existin
           />
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   )
 }
