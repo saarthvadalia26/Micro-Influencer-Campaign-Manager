@@ -23,29 +23,24 @@ export async function middleware(request: NextRequest) {
     }
   )
 
+  const { pathname } = request.nextUrl
+  
+  // 1. Truly public routes that NEVER need auth check
+  const isPublicRoute = 
+    pathname === '/forgot-password' ||
+    pathname === '/reset-password' ||
+    pathname.startsWith('/portal/')
+
+  if (isPublicRoute) {
+    return supabaseResponse
+  }
+
+  // 2. Perform auth check for all other routes
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const { pathname } = request.nextUrl
-
-  // Public routes: portal login/signup, password reset pages, and auth pages
-  if (
-    pathname === '/portal/login' ||
-    pathname === '/portal/signup' ||
-    pathname === '/forgot-password' ||
-    pathname === '/reset-password' ||
-    pathname.startsWith('/(auth)')
-  ) {
-    return supabaseResponse
-  }
-
-  // Portal routes: let the page handle its own auth check (email matching)
-  if (pathname.startsWith('/portal/')) {
-    return supabaseResponse
-  }
-
-  // Auth routes: redirect to dashboard if already logged in
+  // 3. Auth routes: redirect to dashboard if already logged in
   if (pathname === '/login' || pathname === '/signup') {
     if (user) {
       return NextResponse.redirect(new URL('/', request.url))
@@ -53,7 +48,7 @@ export async function middleware(request: NextRequest) {
     return supabaseResponse
   }
 
-  // Protected routes: redirect to login if not authenticated
+  // 4. Protected routes: redirect to login if not authenticated
   if (!user) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
