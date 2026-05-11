@@ -60,6 +60,19 @@
   h1, h2 {
     @apply tracking-tighter;
   }
+
+  /* Tactile feedback for buttons and links */
+  button:active, 
+  a:active,
+  [role="button"]:active {
+    transform: scale(0.96);
+    transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Transition for hover/active states */
+  .transition-tactile {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 }
 
 /* Custom Scrollbar */
