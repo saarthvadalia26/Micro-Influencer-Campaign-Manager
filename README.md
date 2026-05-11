@@ -1,119 +1,104 @@
-# Micro-Influencer Campaign Manager
+# 🚀 Micro-Influencer Campaign Manager
 
-A full-stack web application for managing micro-influencer campaigns end-to-end.
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-Database-green?style=for-the-badge&logo=supabase)](https://supabase.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-blue?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 
-## Tech Stack
+A comprehensive, enterprise-grade platform designed to streamline micro-influencer campaign management. From outreach and negotiation to content approval and ROI tracking, this tool provides a centralized hub for brands to scale their influencer marketing efforts.
 
-- **Framework**: Next.js 15 (App Router, TypeScript)
-- **Styling**: Tailwind CSS + Shadcn UI
-- **Database / Auth**: Supabase (PostgreSQL + Auth + Storage)
-- **Forms**: React Hook Form + Zod
-- **Drag & Drop**: @hello-pangea/dnd
-- **Notifications**: Sonner (toasts) + Supabase Realtime
+## ✨ Key Features
 
-## Setup Instructions
+### 📋 Campaign & Pipeline Management
+*   **Dynamic Kanban Board**: Visualize your influencer pipeline through a 5-stage workflow: *Outreach → Negotiation → Content Pending → Live → Paid*.
+*   **Drag-and-Drop Workflow**: Powered by `@hello-pangea/dnd` for smooth, real-time status updates.
+*   **Centralized Tracking**: Monitor budgets, dates, and influencer assignments across multiple active campaigns.
 
-### 1. Install Node.js
+### 👤 Advanced Influencer Directory
+*   **Robust Profiles**: Detailed influencer profiles including social handles (Instagram, TikTok, YouTube), niche classification, and historical performance.
+*   **Stats Engine**: Real-time tracking of follower counts, engagement rates, and average cost-per-post.
+*   **Campaign History**: Automatic tracking of every influencer's past involvement and performance within your brand.
 
-Download from [nodejs.org](https://nodejs.org) (LTS recommended).
+### 🎨 Creator Portal (White-Label Experience)
+*   **Token-Based Access**: Secure, password-less links for influencers to access their specific campaign briefs.
+*   **Content Upload Pipeline**: Seamless drag-and-drop file uploads (images/videos) directly to Supabase Storage.
+*   **Feedback Loop**: Integrated revision request system allowing brands to provide feedback and creators to re-upload content.
 
-### 2. Install dependencies
+### 📊 Analytics & ROI Dashboard
+*   **Automated ROI Calculator**: Instant calculation of CPM (Cost Per Mille), CPE (Cost Per Engagement), and overall Efficiency Scores.
+*   **Financial Overview**: Track total spend, remaining budget, and payment statuses.
+*   **Automated Screenshots**: Integrated with ScreenshotOne API to capture live posts automatically for proof of delivery.
 
-```bash
-npm install
+## 🛠️ Technology Stack
+
+*   **Core**: Next.js 15 (App Router), TypeScript, React 19
+*   **Authentication**: Supabase Auth (SSR)
+*   **Database**: PostgreSQL via Supabase with RLS (Row Level Security)
+*   **Storage**: Supabase Storage for high-resolution media handling
+*   **UI/UX**: Tailwind CSS, Shadcn UI, Framer Motion for micro-animations
+*   **Forms**: React Hook Form + Zod for strict type-safe validation
+*   **Performance**: Request-level caching and optimized database projections
+
+## 🚀 Getting Started
+
+### Prerequisites
+*   Node.js 18.x or higher
+*   Supabase Account
+
+### Installation
+
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/saarthvadalia26/Micro-Influencer-Campaign-Manager.git
+    cd Micro-Influencer-Campaign-Manager
+    ```
+
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+
+3.  **Supabase Setup**:
+    *   Create a new project at [supabase.com](https://supabase.com).
+    *   Run the provided `supabase/schema.sql` in the SQL Editor.
+    *   Create a storage bucket named `content-drafts` and set its privacy to public.
+    *   Enable Realtime for the `content_drafts` table.
+
+4.  **Environment Variables**:
+    Create a `.env.local` file in the root directory:
+    ```env
+    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+    SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+    SCREENSHOT_API_KEY=your_screenshot_one_api_key
+    NEXT_PUBLIC_APP_URL=http://localhost:3000
+    ```
+
+5.  **Run Development Server**:
+    ```bash
+    npm run dev
+    ```
+
+## 📂 Project Structure
+
+```text
+├── app/                  # Next.js App Router (Dashboard & Portal)
+├── components/           # UI Components (Kanban, ROI, Forms)
+├── lib/                  # Utilities (Supabase client, Helpers, Hooks)
+├── supabase/             # Database migrations and schema
+├── public/               # Static assets
+└── types/                # TypeScript definitions
 ```
 
-### 3. Create a Supabase project
+## ⚡ Performance Optimizations
+This project implements several advanced performance patterns:
+*   **Memoized Auth**: Cached `getUser` calls to prevent redundant network requests during server-side rendering.
+*   **Lean Projections**: All database queries are optimized to fetch only required columns, significantly reducing the JSON payload size.
+*   **Parallel Fetching**: Leveraging `Promise.all` for concurrent data fetching in complex dashboard views.
 
-1. Go to [supabase.com](https://supabase.com) and create a new project
-2. In the **SQL Editor**, run `supabase/schema.sql` to create all tables, triggers, and RLS policies
-3. In **Storage**, create a public bucket named `content-drafts`
-4. Enable **Realtime** for the `content_drafts` table (Database → Replication)
+## 👨‍💻 Author
+**Saarth Vadalia**
+*   GitHub: [@saarthvadalia26](https://github.com/saarthvadalia26)
 
-### 4. Configure environment variables
-
-Copy `.env.local.example` to `.env.local` and fill in your values:
-
-```bash
-cp .env.local.example .env.local
-```
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
-
-Find these values in **Supabase Dashboard → Settings → API**.
-
-### 5. Run the development server
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000).
-
-## Features
-
-### Dashboard — Kanban Health Board
-- 5-column pipeline: Outreach → Product Sent → Content Pending → Live → Paid
-- Drag & drop cards to update status (persists to Supabase)
-- Summary stats: active campaigns, influencers engaged, budget metrics
-
-### Campaigns
-- Create, edit, view campaigns with budget + date tracking
-- Add influencers from your directory to campaigns
-- Auto-generated unique Creator Portal link per influencer
-- Real-time notifications when new content is submitted
-
-### Influencer Directory
-- Full CRUD for influencer profiles
-- Social handles (Instagram, TikTok, YouTube)
-- Stats: followers, engagement rate, rate/post
-- Campaign history per influencer
-
-### Creator Portal (`/portal/[token]`)
-- **No login required** — accessible via unique token link
-- Shows campaign brief and product tracking
-- Drag & drop file upload (image/video) to Supabase Storage
-- Caption draft textarea
-- Submit for brand review → re-upload if revision requested
-
-### Content Review (Brand Side)
-- Preview uploaded images/videos in-app
-- Approve ✅ or Request Revision ✏️ with feedback
-
-### ROI Calculator
-- Inputs: Total Spend, Total Views, Total Engagements
-- Outputs: CPM, CPE, color-coded Efficiency Score (Green/Yellow/Red)
-- Saves to `campaign_analytics` table
-
-## Folder Structure
-
-```
-app/
-  (auth)/login/          — Login page
-  (auth)/signup/         — Signup page
-  (dashboard)/           — Protected dashboard routes
-    page.tsx             — Kanban board
-    campaigns/           — Campaign list + detail
-    influencers/         — Influencer directory + profiles
-    settings/            — Profile settings
-  portal/[token]/        — Public creator portal
-components/
-  kanban/                — KanbanBoard, KanbanColumn, KanbanCard
-  campaigns/             — Forms, dialogs, content review
-  influencers/           — Forms, dialogs
-  portal/                — Upload form, portal content
-  roi-calculator/        — ROI Calculator
-  ui/                    — Shadcn UI components
-lib/
-  supabase/              — Client, server, types
-  validations/           — Zod schemas
-  hooks/                 — Realtime hooks
-  utils.ts               — Utilities
-supabase/
-  schema.sql             — Full database schema
-```
-👨‍💻 Author - Saarth Vadalia
+---
+*Built with ❤️ for the creator economy.*
