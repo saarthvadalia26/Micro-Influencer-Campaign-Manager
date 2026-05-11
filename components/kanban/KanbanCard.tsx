@@ -8,6 +8,8 @@ import type { CampaignInfluencer, Influencer, Campaign } from '@/lib/supabase/ty
 import { Instagram, Youtube, DollarSign } from 'lucide-react'
 import Link from 'next/link'
 
+import { motion } from 'framer-motion'
+
 interface KanbanCardProps {
   item: CampaignInfluencer & { influencer: Influencer; campaign: Campaign }
   index: number
@@ -34,13 +36,18 @@ export function KanbanCard({ item, index }: KanbanCardProps) {
   return (
     <Draggable draggableId={item.id} index={index}>
       {(provided, snapshot) => (
-        <div
+        <motion.div
+          layout
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          transition={{ duration: 0.2 }}
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`mb-3 ${snapshot.isDragging ? 'rotate-1 opacity-90' : ''}`}
+          className={`mb-3 outline-none ${snapshot.isDragging ? 'z-50' : ''}`}
         >
-          <Card className="cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow border-l-4 border-l-primary/30">
+          <Card className={`cursor-grab active:cursor-grabbing hover:shadow-md transition-all border-l-4 border-l-primary/30 ${snapshot.isDragging ? 'rotate-2 scale-105 shadow-xl border-l-primary' : ''}`}>
             <CardContent className="p-3">
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div className="min-w-0">
@@ -79,7 +86,7 @@ export function KanbanCard({ item, index }: KanbanCardProps) {
               )}
             </CardContent>
           </Card>
-        </div>
+        </motion.div>
       )}
     </Draggable>
   )
