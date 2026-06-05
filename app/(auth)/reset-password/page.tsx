@@ -26,7 +26,7 @@ export default function ResetPasswordPage() {
       setChecking(false)
     }
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: any) => {
       if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') {
         setHasSession(true)
         setChecking(false)

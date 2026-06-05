@@ -20,7 +20,7 @@ export function useRealtimeDrafts(
           schema: 'public',
           table: 'content_drafts',
         },
-        (payload) => {
+        (payload: any) => {
           toast.info('New content draft submitted!', {
             description: 'A creator just submitted content for review.',
             action: { label: 'Refresh', onClick: onNewDraft },

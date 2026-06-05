@@ -14,7 +14,7 @@ export interface PaymentResult {
  * - Supports multiple payments per influencer
  */
 export async function recordPayment(
-  supabase: SupabaseClient,
+  supabase: any,
   campaignInfluencerId: string,
   campaignId: string,
   amount: number,

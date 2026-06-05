@@ -25,11 +25,11 @@ async function DashboardStats() {
   const campaigns = campaignsResult.data ?? []
   const influencerLinks = ciResult.data ?? []
 
-  const activeCampaigns = campaigns.filter((c) => c.status === 'active').length
+  const activeCampaigns = campaigns.filter((c: any) => c.status === 'active').length
   const totalInfluencers = influencerLinks.length
-  const totalBudget = campaigns.reduce((sum, c) => sum + (c.budget ?? 0), 0)
+  const totalBudget = campaigns.reduce((sum: number, c: any) => sum + (c.budget ?? 0), 0)
   const totalPaid = influencerLinks.reduce(
-    (sum, ci) => sum + ((ci.payments as { amount: number }[]) ?? []).reduce((ps, p) => ps + p.amount, 0), 0
+    (sum: number, ci: any) => sum + (((ci.payments as { amount: number }[]) ?? []).reduce((ps, p) => ps + p.amount, 0)), 0
   )
 
   const stats = [

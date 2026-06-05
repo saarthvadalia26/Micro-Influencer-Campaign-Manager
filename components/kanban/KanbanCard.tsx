@@ -36,57 +36,60 @@ export function KanbanCard({ item, index }: KanbanCardProps) {
   return (
     <Draggable draggableId={item.id} index={index}>
       {(provided, snapshot) => (
-        <motion.div
-          layout
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          transition={{ duration: 0.2 }}
+        <div
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           className={`mb-3 outline-none ${snapshot.isDragging ? 'z-50' : ''}`}
         >
-          <Card className={`cursor-grab active:cursor-grabbing hover:shadow-md transition-all border-l-4 border-l-primary/30 ${snapshot.isDragging ? 'rotate-2 scale-105 shadow-xl border-l-primary' : ''}`}>
-            <CardContent className="p-3">
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm truncate">{influencer.name}</p>
-                  {primaryHandle && (
-                    <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
-                      {platformIcon}
-                      <span className="truncate">{primaryHandle}</span>
-                    </p>
-                  )}
-                </div>
-                <Badge className={`text-xs shrink-0 ${getStatusColor(item.status)}`}>
-                  {getStatusLabel(item.status)}
-                </Badge>
-              </div>
-
-              <Link
-                href={`/campaigns/${campaign.id}`}
-                className="text-xs text-muted-foreground hover:text-primary transition-colors truncate block mb-2"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {campaign.title}
-              </Link>
-
-              <div className="flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                <DollarSign className="h-3 w-3" />
-                {formatCurrency(item.agreed_rate)}
-              </div>
-
-              {influencer.niche && (
-                <div className="mt-2">
-                  <Badge variant="outline" className="text-xs">
-                    {influencer.niche}
+          <motion.div
+            layout
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Card className={`cursor-grab active:cursor-grabbing hover:shadow-md transition-all border-l-4 border-l-primary/30 ${snapshot.isDragging ? 'rotate-2 scale-105 shadow-xl border-l-primary' : ''}`}>
+              <CardContent className="p-3">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-sm truncate">{influencer.name}</p>
+                    {primaryHandle && (
+                      <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                        {platformIcon}
+                        <span className="truncate">{primaryHandle}</span>
+                      </p>
+                    )}
+                  </div>
+                  <Badge className={`text-xs shrink-0 ${getStatusColor(item.status)}`}>
+                    {getStatusLabel(item.status)}
                   </Badge>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
+
+                <Link
+                  href={`/campaigns/${campaign.id}`}
+                  className="text-xs text-muted-foreground hover:text-primary transition-colors truncate block mb-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {campaign.title}
+                </Link>
+
+                <div className="flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                  <DollarSign className="h-3 w-3" />
+                  {formatCurrency(item.agreed_rate)}
+                </div>
+
+                {influencer.niche && (
+                  <div className="mt-2">
+                    <Badge variant="outline" className="text-xs">
+                      {influencer.niche}
+                    </Badge>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
       )}
     </Draggable>
   )

@@ -34,7 +34,7 @@ export function DeleteCampaignButton({ campaignId, campaignTitle }: { campaignId
 
     // 2. Delete uploaded files from storage
     if (ciRows && ciRows.length > 0) {
-      const ciIds = ciRows.map((r) => r.id)
+      const ciIds = ciRows.map((r: any) => r.id)
       await deleteStorageFiles(supabase, ciIds)
 
       // Delete screenshots via service role API (uploaded by service role, can't delete client-side)

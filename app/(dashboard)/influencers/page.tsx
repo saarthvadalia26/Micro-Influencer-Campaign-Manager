@@ -43,7 +43,7 @@ export default async function InfluencersPage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {influencers.map((inf) => (
+          {influencers.map((inf: any) => (
             <Card key={inf.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-5">
                 <div className="flex items-start justify-between mb-3">

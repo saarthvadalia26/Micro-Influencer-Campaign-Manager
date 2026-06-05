@@ -6,7 +6,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
  * Files are stored as: {campaign_influencer_id}/{timestamp}.{ext}
  */
 export async function deleteStorageFiles(
-  supabase: SupabaseClient,
+  supabase: any,
   campaignInfluencerIds: string[]
 ) {
   const allPaths: string[] = []
@@ -18,7 +18,7 @@ export async function deleteStorageFiles(
       .list(ciId)
 
     if (files && files.length > 0) {
-      allPaths.push(...files.map((f) => `${ciId}/${f.name}`))
+      allPaths.push(...files.map((f: any) => `${ciId}/${f.name}`))
     }
 
     // Approach 2: Get file paths from content_drafts DB rows
@@ -54,7 +54,7 @@ export async function deleteStorageFiles(
       .list(ciId)
 
     if (files && files.length > 0) {
-      screenshotPaths.push(...files.map((f) => `${ciId}/${f.name}`))
+      screenshotPaths.push(...files.map((f: any) => `${ciId}/${f.name}`))
     }
   }
 

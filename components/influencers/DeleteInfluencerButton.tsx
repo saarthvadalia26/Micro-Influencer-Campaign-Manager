@@ -34,7 +34,7 @@ export function DeleteInfluencerButton({ influencerId }: { influencerId: string 
 
     // 2. Delete uploaded files from storage
     if (ciRows && ciRows.length > 0) {
-      await deleteStorageFiles(supabase, ciRows.map((r) => r.id))
+      await deleteStorageFiles(supabase, ciRows.map((r: any) => r.id))
     }
 
     // 3. Delete the influencer (cascades to campaign_influencers + content_drafts)

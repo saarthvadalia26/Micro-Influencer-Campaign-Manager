@@ -66,7 +66,7 @@ export default async function CampaignsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {campaigns.map((campaign) => (
+              {campaigns.map((campaign: any) => (
                 <TableRow key={campaign.id}>
                   <TableCell>
                     <div>

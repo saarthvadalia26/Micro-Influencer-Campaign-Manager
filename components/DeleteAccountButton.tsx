@@ -33,7 +33,7 @@ export function DeleteAccountButton({ email }: { email: string }) {
         .eq('brand_id', (await supabase.auth.getUser()).data.user?.id ?? '')
 
       if (campaigns && campaigns.length > 0) {
-        const campaignIds = campaigns.map((c) => c.id)
+        const campaignIds = campaigns.map((c: any) => c.id)
         const { data: ciRows } = await supabase
           .from('campaign_influencers')
           .select('id')
@@ -41,7 +41,7 @@ export function DeleteAccountButton({ email }: { email: string }) {
 
         // 2. Delete all storage files
         if (ciRows && ciRows.length > 0) {
-          await deleteStorageFiles(supabase, ciRows.map((r) => r.id))
+          await deleteStorageFiles(supabase, ciRows.map((r: any) => r.id))
         }
       }
 
