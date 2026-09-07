@@ -24,12 +24,11 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
       toast.error(error.message)
+      setIsLoading(false)
     } else {
-      toast.success('Welcome back!')
-      router.push('/')
-      router.refresh()
+      toast.success('Welcome back! Redirecting...')
+      window.location.href = '/'
     }
-    setIsLoading(false)
   }
 
   return (
@@ -78,7 +77,7 @@ export default function LoginPage() {
             disabled={isLoading}
           >
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
-            Sign In
+            {isLoading ? 'Signing In...' : 'Sign In'}
           </Button>
         </form>
       </div>

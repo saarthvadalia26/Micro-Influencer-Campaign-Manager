@@ -1,13 +1,14 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getUser } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { ProfileForm } from '@/components/ProfileForm'
 import { DeleteAccountButton } from '@/components/DeleteAccountButton'
 
 export default async function SettingsPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user } } = await getUser()
   if (!user) return null
+
+  const supabase = await createClient()
 
   const { data: profile } = await supabase
     .from('profiles')

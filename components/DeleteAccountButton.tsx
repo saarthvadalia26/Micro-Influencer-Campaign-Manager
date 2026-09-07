@@ -53,12 +53,16 @@ export function DeleteAccountButton({ email }: { email: string }) {
         throw new Error(result.error || 'Failed to delete account')
       }
 
-      // 4. Sign out
-      await supabase.auth.signOut()
+      // 4. Sign out locally and redirect cleanly
+      try {
+        await supabase.auth.signOut({ scope: 'local' })
+      } catch {
+        // continue
+      }
 
       toast.success('Account deleted permanently')
-      router.push('/login')
-      router.refresh()
+      window.location.href = '/login'
+      return
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to delete account'
       toast.error(message)

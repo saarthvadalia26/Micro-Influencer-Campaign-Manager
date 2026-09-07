@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getUser } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -14,9 +14,10 @@ interface PageProps { params: Promise<{ id: string }> }
 
 export default async function InfluencerDetailPage({ params }: PageProps) {
   const { id } = await params
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user } } = await getUser()
   if (!user) return null
+
+  const supabase = await createClient()
 
   const [infResult, ciResult] = await Promise.all([
     supabase

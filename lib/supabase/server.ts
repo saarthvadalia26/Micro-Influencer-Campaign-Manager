@@ -1,5 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { cache } from 'react'
 import type { Database } from './types'
 
@@ -30,9 +30,31 @@ export async function createClient() {
 }
 
 /**
- * Cached version of getUser to avoid redundant network calls in the same request.
+ * Cached version of getUser to avoid redundant network calls.
+ * First checks headers for user verified by middleware (0ms round-trip).
+ * Falls back to supabase.auth.getUser() if headers are unavailable.
  */
 export const getUser = cache(async () => {
+  try {
+    const headersList = await headers()
+    const userId = headersList.get('x-user-id')
+    const userEmail = headersList.get('x-user-email')
+
+    if (userId) {
+      return {
+        data: {
+          user: {
+            id: userId,
+            email: userEmail || undefined,
+          } as any,
+        },
+        error: null,
+      }
+    }
+  } catch {
+    // headers() might throw in certain build/prerender contexts; proceed to fallback
+  }
+
   const supabase = await createClient()
   return await supabase.auth.getUser()
 })

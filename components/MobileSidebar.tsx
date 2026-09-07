@@ -6,9 +6,10 @@ import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { LayoutDashboard, Megaphone, Users, LogOut, Settings, Menu, ShieldCheck, X } from 'lucide-react'
+import { LayoutDashboard, Megaphone, Users, LogOut, Settings, Menu, ShieldCheck, X, Loader2 } from 'lucide-react'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { Logo } from '@/components/Logo'
+import { toast } from 'sonner'
 
 type IconKey = 'dashboard' | 'campaigns' | 'influencers' | 'admin'
 
@@ -38,6 +39,7 @@ type Props = {
 
 export function MobileSidebar({ navItems, profile, userEmail, initials }: Props) {
   const [open, setOpen] = useState(false)
+  const [isSigningOut, setIsSigningOut] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
@@ -58,9 +60,17 @@ export function MobileSidebar({ navItems, profile, userEmail, initials }: Props)
   }, [open])
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push('/login')
-    router.refresh()
+    if (isSigningOut) return
+    setIsSigningOut(true)
+    toast.info('Signing out...')
+
+    try {
+      await supabase.auth.signOut({ scope: 'local' })
+    } catch {
+      // Continue even if remote network fails
+    }
+
+    window.location.href = '/login'
   }
 
   return (
@@ -192,10 +202,15 @@ export function MobileSidebar({ navItems, profile, userEmail, initials }: Props)
           </div>
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm text-destructive hover:bg-destructive/10 transition-colors"
+            disabled={isSigningOut}
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-50"
           >
-            <LogOut className="h-4 w-4" />
-            Sign Out
+            {isSigningOut ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <LogOut className="h-4 w-4" />
+            )}
+            {isSigningOut ? 'Signing Out...' : 'Sign Out'}
           </button>
         </div>
       </aside>

@@ -36,7 +36,11 @@ export default function SignupPage() {
     })
     if (error) {
       toast.error(error.message)
-    } else if (data.user) {
+      setIsLoading(false)
+      return
+    }
+    
+    if (data.user) {
       await supabase.from('profiles').insert({
         id: data.user.id,
         full_name: fullName,
@@ -44,10 +48,10 @@ export default function SignupPage() {
         role: 'brand',
       })
       toast.success('Account created! Redirecting...')
-      router.push('/')
-      router.refresh()
+      window.location.href = '/'
+    } else {
+      setIsLoading(false)
     }
-    setIsLoading(false)
   }
 
   return (
@@ -114,7 +118,7 @@ export default function SignupPage() {
             disabled={isLoading}
           >
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
-            Create Account
+            {isLoading ? 'Creating Account...' : 'Create Account'}
           </Button>
         </form>
       </div>

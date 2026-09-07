@@ -37,12 +37,11 @@ function PortalLoginForm() {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
       toast.error(error.message)
+      setIsLoading(false)
     } else {
-      toast.success('Signed in!')
-      router.push(redirectTo)
-      router.refresh()
+      toast.success('Signed in! Redirecting...')
+      window.location.href = redirectTo
     }
-    setIsLoading(false)
   }
 
   return (
@@ -86,7 +85,7 @@ function PortalLoginForm() {
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
-                Sign In
+                {isLoading ? 'Signing In...' : 'Sign In'}
               </Button>
             </form>
           </CardContent>

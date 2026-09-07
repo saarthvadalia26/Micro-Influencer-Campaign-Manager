@@ -49,18 +49,22 @@ function PortalSignupForm() {
 
     if (error) {
       toast.error(error.message)
-    } else if (data.user) {
+      setIsLoading(false)
+      return
+    }
+    
+    if (data.user) {
       // Create profile with influencer role
       await supabase.from('profiles').upsert({
         id: data.user.id,
         full_name: fullName,
         role: 'influencer',
       })
-      toast.success('Account created!')
-      router.push(redirectTo)
-      router.refresh()
+      toast.success('Account created! Redirecting...')
+      window.location.href = redirectTo
+    } else {
+      setIsLoading(false)
     }
-    setIsLoading(false)
   }
 
   return (
@@ -114,7 +118,7 @@ function PortalSignupForm() {
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
-                Create Account
+                {isLoading ? 'Creating Account...' : 'Create Account'}
               </Button>
             </form>
           </CardContent>
