@@ -153,9 +153,16 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS campaigns_updated_at ON campaigns;
 CREATE TRIGGER campaigns_updated_at BEFORE UPDATE ON campaigns FOR EACH ROW EXECUTE PROCEDURE update_updated_at();
+
+DROP TRIGGER IF EXISTS influencers_updated_at ON influencers;
 CREATE TRIGGER influencers_updated_at BEFORE UPDATE ON influencers FOR EACH ROW EXECUTE PROCEDURE update_updated_at();
+
+DROP TRIGGER IF EXISTS campaign_influencers_updated_at ON campaign_influencers;
 CREATE TRIGGER campaign_influencers_updated_at BEFORE UPDATE ON campaign_influencers FOR EACH ROW EXECUTE PROCEDURE update_updated_at();
+
+DROP TRIGGER IF EXISTS campaign_analytics_updated_at ON campaign_analytics;
 CREATE TRIGGER campaign_analytics_updated_at BEFORE UPDATE ON campaign_analytics FOR EACH ROW EXECUTE PROCEDURE update_updated_at();
 
 -- ============================================================
