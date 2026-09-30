@@ -12,8 +12,34 @@ export async function POST(request: Request) {
 
   // 2. Parse body
   const { campaignInfluencerId, postUrl } = await request.json()
-  if (!campaignInfluencerId || !postUrl) {
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+  if (!campaignInfluencerId || !postUrl || typeof postUrl !== 'string') {
+    return NextResponse.json({ error: 'Missing or invalid required fields' }, { status: 400 })
+  }
+
+  // Validate URL and prevent SSRF
+  let parsedUrl: URL
+  try {
+    parsedUrl = new URL(postUrl)
+  } catch {
+    return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 })
+  }
+
+  if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+    return NextResponse.json({ error: 'Only HTTP/HTTPS URLs are supported' }, { status: 400 })
+  }
+
+  const hostname = parsedUrl.hostname.toLowerCase()
+  if (
+    hostname === 'localhost' ||
+    hostname.endsWith('.localhost') ||
+    hostname === '127.0.0.1' ||
+    hostname === '0.0.0.0' ||
+    hostname.startsWith('10.') ||
+    hostname.startsWith('192.168.') ||
+    hostname.startsWith('172.16.') ||
+    hostname.startsWith('169.254.')
+  ) {
+    return NextResponse.json({ error: 'Private or internal network URLs are disallowed' }, { status: 400 })
   }
 
   // 3. Verify ownership (RLS ensures user can only see their own campaign_influencers)

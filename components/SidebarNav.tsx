@@ -45,14 +45,14 @@ export function SidebarNav({ items }: { items: SidebarNavItem[] }) {
               href={item.href}
               className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all duration-300 group ${
                 isActive
-                  ? 'bg-white/[0.06] text-white'
-                  : 'hover:bg-white/[0.04] text-muted-foreground hover:text-foreground'
+                  ? 'bg-primary/10 text-primary dark:bg-white/[0.06] dark:text-white font-medium'
+                  : 'hover:bg-accent hover:text-foreground text-muted-foreground'
               }`}
             >
               <Icon
                 className={`h-4 w-4 transition-all duration-300 group-hover:scale-110 ${
                   isActive
-                    ? 'text-indigo-400 drop-shadow-[0_0_6px_rgba(129,140,248,0.5)]'
+                    ? 'text-primary dark:text-indigo-400 drop-shadow-[0_0_6px_rgba(129,140,248,0.5)]'
                     : 'text-muted-foreground group-hover:text-foreground'
                 }`}
                 style={isActive ? {
@@ -62,7 +62,7 @@ export function SidebarNav({ items }: { items: SidebarNavItem[] }) {
               {isActive ? (
                 <motion.span 
                   layoutId="active-nav-text"
-                  className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent font-medium"
+                  className="bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent font-medium"
                 >
                   {item.label}
                 </motion.span>

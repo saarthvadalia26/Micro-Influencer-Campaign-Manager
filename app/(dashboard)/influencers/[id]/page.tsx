@@ -50,25 +50,27 @@ export default async function InfluencerDetailPage({ params }: PageProps) {
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-6">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href="/influencers"><ArrowLeft className="h-4 w-4" /></Link>
-        </Button>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-2xl font-bold">{influencer.name}</h1>
-            {influencer.niche && (
-              <Badge variant="secondary">{influencer.niche}</Badge>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-3 min-w-0">
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="/influencers"><ArrowLeft className="h-4 w-4" /></Link>
+          </Button>
+          <div className="min-w-0">
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-2xl font-bold truncate">{influencer.name}</h1>
+              {influencer.niche && (
+                <Badge variant="secondary">{influencer.niche}</Badge>
+              )}
+            </div>
+            {influencer.location && (
+              <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                <MapPin className="h-3.5 w-3.5" />
+                {influencer.location}
+              </p>
             )}
           </div>
-          {influencer.location && (
-            <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-              <MapPin className="h-3.5 w-3.5" />
-              {influencer.location}
-            </p>
-          )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-end sm:self-auto">
           <EditInfluencerDialog influencer={influencer} />
           <DeleteInfluencerButton influencerId={influencer.id} />
         </div>

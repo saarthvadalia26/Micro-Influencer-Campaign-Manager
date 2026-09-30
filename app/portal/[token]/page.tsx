@@ -31,7 +31,7 @@ export default async function PortalPage({ params }: PageProps) {
     .select(`
       *,
       campaign:campaigns(
-        id, title, description, start_date, end_date, status
+        id, brand_id, title, description, start_date, end_date, status
       ),
       influencer:influencers(id, name, email, instagram_handle, tiktok_handle)
     `)
@@ -41,6 +41,29 @@ export default async function PortalPage({ params }: PageProps) {
   if (!ci || !ci.campaign || !ci.influencer) {
     notFound()
   }
+
+  // Authorization check: verify logged-in user is the assigned influencer or the campaign owner
+  const userEmail = user.email?.toLowerCase()
+  const influencerEmail = ci.influencer.email?.toLowerCase()
+  const isBrandOwner = ci.campaign.brand_id === user.id
+  const isAssignedInfluencer = !!influencerEmail && userEmail === influencerEmail
+
+  if (!isBrandOwner && !isAssignedInfluencer) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+        <Card className="max-w-md w-full p-6 text-center space-y-4">
+          <h2 className="text-xl font-bold">Unauthorized Portal Access</h2>
+          <p className="text-sm text-muted-foreground">
+            You are logged in as <strong>{user.email}</strong>, which does not match the creator assigned to this collaboration.
+          </p>
+          <div className="pt-2 flex justify-center">
+            <PortalSignOutButton redirectTo={`/portal/login?redirect=${encodeURIComponent(`/portal/${token}`)}`} />
+          </div>
+        </Card>
+      </div>
+    )
+  }
+
 
   const { data: drafts } = await supabase
     .from('content_drafts')

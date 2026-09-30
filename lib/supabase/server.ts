@@ -30,31 +30,10 @@ export async function createClient() {
 }
 
 /**
- * Cached version of getUser to avoid redundant network calls.
- * First checks headers for user verified by middleware (0ms round-trip).
- * Falls back to supabase.auth.getUser() if headers are unavailable.
+ * Cached version of getUser to avoid redundant network calls during SSR.
+ * Securely verifies session via Supabase Auth.
  */
 export const getUser = cache(async () => {
-  try {
-    const headersList = await headers()
-    const userId = headersList.get('x-user-id')
-    const userEmail = headersList.get('x-user-email')
-
-    if (userId) {
-      return {
-        data: {
-          user: {
-            id: userId,
-            email: userEmail || undefined,
-          } as any,
-        },
-        error: null,
-      }
-    }
-  } catch {
-    // headers() might throw in certain build/prerender contexts; proceed to fallback
-  }
-
   const supabase = await createClient()
   return await supabase.auth.getUser()
 })

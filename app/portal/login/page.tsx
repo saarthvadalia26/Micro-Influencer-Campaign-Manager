@@ -28,7 +28,10 @@ function PortalLoginForm() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
-  const redirectTo = searchParams.get('redirect') ?? '/portal'
+  const rawRedirect = searchParams.get('redirect') ?? '/portal'
+  const safeRedirect = rawRedirect.startsWith('/') && !rawRedirect.startsWith('//') && !rawRedirect.includes('\\')
+    ? rawRedirect
+    : '/portal'
   const supabase = createClient()
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -40,7 +43,7 @@ function PortalLoginForm() {
       setIsLoading(false)
     } else {
       toast.success('Signed in! Redirecting...')
-      window.location.href = redirectTo
+      window.location.href = safeRedirect
     }
   }
 

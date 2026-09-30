@@ -64,8 +64,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
       </div>
 
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 border-r border-white/[0.08] bg-white/[0.03] backdrop-blur-xl hidden lg:flex flex-col z-30">
-        <div className="p-6 border-b border-white/[0.08]">
+      <aside className="fixed left-0 top-0 h-full w-64 border-r border-border bg-card/60 dark:border-white/[0.08] dark:bg-white/[0.03] backdrop-blur-xl hidden lg:flex flex-col z-30">
+        <div className="p-6 border-b border-border dark:border-white/[0.08]">
           <div className="flex items-center gap-2">
             <Logo size={32} />
             <div>
@@ -81,7 +81,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <SidebarNav items={navItems} />
         </nav>
 
-        <div className="p-4 border-t border-white/[0.08]">
+        <div className="p-4 border-t border-border dark:border-white/[0.08]">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-3 w-full rounded-md px-3 py-2 hover:bg-muted transition-colors text-left">

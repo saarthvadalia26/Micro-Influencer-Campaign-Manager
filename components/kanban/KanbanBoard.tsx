@@ -18,6 +18,7 @@ interface KanbanBoardProps {
 
 export function KanbanBoard({ initialItems }: KanbanBoardProps) {
   const [items, setItems] = useState<KanbanItem[]>(initialItems)
+  const [selectedMobileTab, setSelectedMobileTab] = useState<CampaignInfluencerStatus | 'all'>('all')
   const supabase = createClient()
 
   const groupedItems = COLUMNS.reduce((acc, status) => {
@@ -41,8 +42,32 @@ export function KanbanBoard({ initialItems }: KanbanBoardProps) {
         prev.map((item) => (item.id === draggableId ? { ...item, status: newStatus } : item))
       )
 
-      // When moving to "paid", auto-record a payment at the agreed rate
+      // When moving to "paid", check if already paid to avoid double deductions
       if (newStatus === 'paid' && oldStatus !== 'paid' && draggedItem) {
+        const { data: existingPayments } = await supabase
+          .from('payments')
+          .select('id')
+          .eq('campaign_influencer_id', draggableId)
+          .limit(1)
+
+        if (existingPayments && existingPayments.length > 0) {
+          // Already has a payment record — update status without double charging
+          const { error: statusError } = await supabase
+            .from('campaign_influencers')
+            .update({ status: 'paid' })
+            .eq('id', draggableId)
+
+          if (statusError) {
+            setItems((prev) =>
+              prev.map((item) => (item.id === draggableId ? { ...item, status: oldStatus } : item))
+            )
+            toast.error('Failed to update status')
+          } else {
+            toast.success('Moved to Paid (existing payment preserved)')
+          }
+          return
+        }
+
         const payResult = await recordPayment(
           supabase,
           draggableId,
@@ -80,16 +105,50 @@ export function KanbanBoard({ initialItems }: KanbanBoardProps) {
         toast.success(`Moved to ${newStatus.replace('_', ' ')}`)
       }
     },
-    [supabase]
+    [supabase, items]
   )
 
+  const visibleColumns = selectedMobileTab === 'all'
+    ? COLUMNS
+    : COLUMNS.filter((c) => c === selectedMobileTab)
+
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex gap-4 overflow-x-auto pb-4">
+    <div>
+      {/* Mobile column filter tabs */}
+      <div className="flex md:hidden items-center gap-1.5 overflow-x-auto pb-3 mb-2 no-scrollbar">
+        <button
+          onClick={() => setSelectedMobileTab('all')}
+          className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+            selectedMobileTab === 'all'
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-muted text-muted-foreground hover:bg-accent'
+          }`}
+        >
+          All Columns ({items.length})
+        </button>
         {COLUMNS.map((status) => (
-          <KanbanColumn key={status} status={status} items={groupedItems[status]} />
+          <button
+            key={status}
+            onClick={() => setSelectedMobileTab(status)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+              selectedMobileTab === status
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-accent'
+            }`}
+          >
+            {status.replace('_', ' ')} ({groupedItems[status].length})
+          </button>
         ))}
       </div>
-    </DragDropContext>
+
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="flex gap-4 overflow-x-auto pb-4">
+          {visibleColumns.map((status) => (
+            <KanbanColumn key={status} status={status} items={groupedItems[status]} />
+          ))}
+        </div>
+      </DragDropContext>
+    </div>
   )
 }
+

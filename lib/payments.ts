@@ -21,7 +21,28 @@ export async function recordPayment(
   note?: string,
   postUrl?: string
 ): Promise<PaymentResult> {
-  // 1. Get the campaign budget
+  if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {
+    return { success: false, message: 'Payment amount must be greater than zero' }
+  }
+
+  // 1. Try atomic PostgreSQL function first (prevents race conditions and lost updates)
+  try {
+    const { data, error } = await supabase.rpc('record_campaign_payment', {
+      p_campaign_influencer_id: campaignInfluencerId,
+      p_campaign_id: campaignId,
+      p_amount: amount,
+      p_note: note || null,
+      p_post_url: postUrl || null,
+    })
+
+    if (!error && data) {
+      return data as PaymentResult
+    }
+  } catch {
+    // Fall back to direct queries if RPC is not yet executed in Supabase SQL editor
+  }
+
+  // 2. Direct fallback
   const { data: campaign, error: campError } = await supabase
     .from('campaigns')
     .select('id, budget')
@@ -32,7 +53,6 @@ export async function recordPayment(
     return { success: false, message: 'Could not find campaign' }
   }
 
-  // 2. Check if budget is sufficient
   if (campaign.budget < amount) {
     return {
       success: false,
@@ -40,7 +60,6 @@ export async function recordPayment(
     }
   }
 
-  // 3. Deduct from campaign budget
   const newBudget = campaign.budget - amount
   const { error: budgetError } = await supabase
     .from('campaigns')
@@ -51,7 +70,6 @@ export async function recordPayment(
     return { success: false, message: 'Failed to deduct from campaign budget' }
   }
 
-  // 4. Insert payment record
   const { error: payError } = await supabase.from('payments').insert({
     campaign_influencer_id: campaignInfluencerId,
     campaign_id: campaignId,
@@ -69,7 +87,6 @@ export async function recordPayment(
     return { success: false, message: 'Failed to record payment. Budget was not deducted.' }
   }
 
-  // 5. Update campaign_influencer status to paid & set latest payment_date
   await supabase
     .from('campaign_influencers')
     .update({ status: 'paid', payment_date: new Date().toISOString() })
@@ -81,3 +98,4 @@ export async function recordPayment(
     amountPaid: amount,
   }
 }
+

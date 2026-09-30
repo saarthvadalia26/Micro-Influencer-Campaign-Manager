@@ -75,10 +75,10 @@ export function MobileSidebar({ navItems, profile, userEmail, initials }: Props)
 
   return (
     <>
-      <header className="lg:hidden sticky top-0 z-30 border-b border-white/[0.08] bg-white/[0.03] backdrop-blur-xl px-4 h-14 flex items-center justify-between">
+      <header className="lg:hidden sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur-xl px-4 h-14 flex items-center justify-between">
         <button
           onClick={() => setOpen(true)}
-          className="p-2 -ml-2 rounded-md hover:bg-white/[0.06] transition-all duration-300 active:scale-95"
+          className="p-2 -ml-2 rounded-md hover:bg-accent transition-all duration-300 active:scale-95"
           aria-label="Open menu"
         >
           <Menu className="h-5 w-5" />
@@ -100,11 +100,11 @@ export function MobileSidebar({ navItems, profile, userEmail, initials }: Props)
 
       {/* Drawer */}
       <aside
-        className={`lg:hidden fixed left-0 top-0 h-full w-72 max-w-[80vw] bg-white/[0.03] backdrop-blur-xl border-r border-white/[0.08] z-50 flex flex-col transform transition-transform duration-300 ease-out ${
+        className={`lg:hidden fixed left-0 top-0 h-full w-72 max-w-[80vw] bg-card text-card-foreground border-r border-border dark:border-white/[0.08] dark:bg-slate-950/95 backdrop-blur-xl z-50 flex flex-col transform transition-transform duration-300 ease-out shadow-2xl ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="p-6 border-b border-white/[0.08] flex items-center justify-between">
+        <div className="p-6 border-b border-border dark:border-white/[0.08] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Logo size={32} />
             <div>
@@ -116,7 +116,7 @@ export function MobileSidebar({ navItems, profile, userEmail, initials }: Props)
           </div>
           <button
             onClick={() => setOpen(false)}
-            className="p-1 rounded-md hover:bg-white/[0.06] transition-all duration-300 active:scale-95"
+            className="p-1 rounded-md hover:bg-accent transition-all duration-300 active:scale-95"
             aria-label="Close menu"
           >
             <X className="h-5 w-5" />
@@ -133,19 +133,19 @@ export function MobileSidebar({ navItems, profile, userEmail, initials }: Props)
                 href={item.href}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-all duration-300 group ${
                   isActive
-                    ? 'bg-white/[0.06] text-white'
-                    : 'hover:bg-white/[0.04] text-muted-foreground hover:text-foreground'
+                    ? 'bg-primary/10 text-primary dark:bg-white/[0.06] dark:text-white font-medium'
+                    : 'hover:bg-accent text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <Icon
                   className={`h-4 w-4 transition-all duration-300 ${
                     isActive
-                      ? 'text-indigo-400 drop-shadow-[0_0_6px_rgba(129,140,248,0.5)]'
+                      ? 'text-primary dark:text-indigo-400 drop-shadow-[0_0_6px_rgba(129,140,248,0.5)]'
                       : 'text-muted-foreground group-hover:text-foreground'
                   }`}
                 />
                 {isActive ? (
-                  <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent font-medium">
+                  <span className="bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent font-medium">
                     {item.label}
                   </span>
                 ) : (
@@ -161,19 +161,19 @@ export function MobileSidebar({ navItems, profile, userEmail, initials }: Props)
                 href="/settings"
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-all duration-300 group ${
                   isSettingsActive
-                    ? 'bg-white/[0.06] text-white'
-                    : 'hover:bg-white/[0.04] text-muted-foreground hover:text-foreground'
+                    ? 'bg-primary/10 text-primary dark:bg-white/[0.06] dark:text-white font-medium'
+                    : 'hover:bg-accent text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <Settings
                   className={`h-4 w-4 transition-all duration-300 ${
                     isSettingsActive
-                      ? 'text-indigo-400 drop-shadow-[0_0_6px_rgba(129,140,248,0.5)]'
+                      ? 'text-primary dark:text-indigo-400 drop-shadow-[0_0_6px_rgba(129,140,248,0.5)]'
                       : 'text-muted-foreground group-hover:text-foreground'
                   }`}
                 />
                 {isSettingsActive ? (
-                  <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent font-medium">
+                  <span className="bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent font-medium">
                     Settings
                   </span>
                 ) : (
@@ -189,7 +189,7 @@ export function MobileSidebar({ navItems, profile, userEmail, initials }: Props)
           </div>
         </nav>
 
-        <div className="p-4 border-t border-white/[0.08] space-y-2">
+        <div className="p-4 border-t border-border dark:border-white/[0.08] space-y-2">
           <div className="flex items-center gap-3 px-3 py-2">
             <Avatar className="h-9 w-9">
               {profile?.avatar_url && <AvatarImage src={profile.avatar_url} />}

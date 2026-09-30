@@ -56,31 +56,34 @@ export default async function CampaignDetailPage({ params }: PageProps) {
     (ci.content_drafts ?? []).filter((d: { status: string }) => d.status === 'pending_review')
   ).length
 
+  const existingInfluencerIds = ciItems.map((ci: any) => ci.influencer_id)
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-6">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href="/campaigns"><ArrowLeft className="h-4 w-4" /></Link>
-        </Button>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-2xl font-bold truncate">{campaign.title}</h1>
-            <Badge className={getStatusColor(campaign.status)}>
-              {getStatusLabel(campaign.status)}
-            </Badge>
-            {pendingDrafts > 0 && (
-              <Badge className="bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300">
-                {pendingDrafts} draft{pendingDrafts > 1 ? 's' : ''} pending review
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-3 min-w-0">
+          <Button variant="ghost" size="icon" asChild className="shrink-0">
+            <Link href="/campaigns"><ArrowLeft className="h-4 w-4" /></Link>
+          </Button>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-2xl font-bold truncate">{campaign.title}</h1>
+              <Badge className={getStatusColor(campaign.status)}>
+                {getStatusLabel(campaign.status)}
               </Badge>
+              {pendingDrafts > 0 && (
+                <Badge className="bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300">
+                  {pendingDrafts} draft{pendingDrafts > 1 ? 's' : ''} pending review
+                </Badge>
+              )}
+            </div>
+            {campaign.description && (
+              <p className="text-muted-foreground text-sm mt-1 line-clamp-2">{campaign.description}</p>
             )}
           </div>
-          {campaign.description && (
-            <p className="text-muted-foreground text-sm mt-1 line-clamp-2">{campaign.description}</p>
-          )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0 self-start sm:self-center pl-11 sm:pl-0">
           <EditCampaignDialog campaign={campaign} />
           <DeleteCampaignButton campaignId={campaign.id} campaignTitle={campaign.title} />
         </div>
@@ -127,7 +130,7 @@ export default async function CampaignDetailPage({ params }: PageProps) {
         <TabsContent value="influencers">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold">Influencer Pipeline</h2>
-            <AddInfluencerDialogClient campaignId={campaign.id} influencers={influencers} />
+            <AddInfluencerDialogClient campaignId={campaign.id} influencers={influencers} existingInfluencerIds={existingInfluencerIds} />
           </div>
 
           {ciItems.length === 0 ? (
@@ -138,7 +141,7 @@ export default async function CampaignDetailPage({ params }: PageProps) {
                 <p className="text-sm text-muted-foreground mb-4">
                   Add influencers from your directory to begin the campaign workflow
                 </p>
-                <AddInfluencerDialogClient campaignId={campaign.id} influencers={influencers} />
+                <AddInfluencerDialogClient campaignId={campaign.id} influencers={influencers} existingInfluencerIds={existingInfluencerIds} />
               </CardContent>
             </Card>
           ) : (

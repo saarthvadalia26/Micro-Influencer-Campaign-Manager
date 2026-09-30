@@ -2,6 +2,10 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Strip untrusted client identity headers to prevent header injection
+  request.headers.delete('x-user-id')
+  request.headers.delete('x-user-email')
+
   const { pathname } = request.nextUrl
 
   // 1. Truly public routes that NEVER need auth check

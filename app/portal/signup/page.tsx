@@ -30,7 +30,10 @@ function PortalSignupForm() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
-  const redirectTo = searchParams.get('redirect') ?? '/portal'
+  const rawRedirect = searchParams.get('redirect') ?? '/portal'
+  const safeRedirect = rawRedirect.startsWith('/') && !rawRedirect.startsWith('//') && !rawRedirect.includes('\\')
+    ? rawRedirect
+    : '/portal'
   const supabase = createClient()
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -61,7 +64,7 @@ function PortalSignupForm() {
         role: 'influencer',
       })
       toast.success('Account created! Redirecting...')
-      window.location.href = redirectTo
+      window.location.href = safeRedirect
     } else {
       setIsLoading(false)
     }
@@ -126,7 +129,7 @@ function PortalSignupForm() {
             <p className="text-sm text-muted-foreground">
               Already have an account?{' '}
               <Link
-                href={`/portal/login?redirect=${encodeURIComponent(redirectTo)}`}
+                href={`/portal/login?redirect=${encodeURIComponent(safeRedirect)}`}
                 className="text-primary font-medium hover:underline"
               >
                 Sign in

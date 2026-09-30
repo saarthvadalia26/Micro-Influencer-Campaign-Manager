@@ -175,6 +175,25 @@ CREATE POLICY "profiles_select_own" ON profiles FOR SELECT USING (auth.uid() = i
 CREATE POLICY "profiles_insert_own" ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
 CREATE POLICY "profiles_update_own" ON profiles FOR UPDATE USING (auth.uid() = id);
 
+-- Prevent unauthorized role escalation via profile update
+CREATE OR REPLACE FUNCTION protect_profile_role()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.role IS DISTINCT FROM OLD.role THEN
+    -- Only allow super_admin to change user roles
+    IF NOT EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'super_admin') THEN
+      NEW.role := OLD.role;
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS trigger_protect_profile_role ON profiles;
+CREATE TRIGGER trigger_protect_profile_role
+  BEFORE UPDATE ON profiles
+  FOR EACH ROW EXECUTE PROCEDURE protect_profile_role();
+
 -- Campaigns: brands see only their own
 CREATE POLICY "campaigns_select_own" ON campaigns FOR SELECT USING (auth.uid() = brand_id);
 CREATE POLICY "campaigns_insert_own" ON campaigns FOR INSERT WITH CHECK (auth.uid() = brand_id);
@@ -197,15 +216,66 @@ CREATE POLICY "campaign_influencers_update_own" ON campaign_influencers FOR UPDA
 CREATE POLICY "campaign_influencers_delete_own" ON campaign_influencers FOR DELETE
   USING (EXISTS (SELECT 1 FROM campaigns WHERE campaigns.id = campaign_influencers.campaign_id AND campaigns.brand_id = auth.uid()));
 
--- Portal access: authenticated users can read campaign_influencers by token
-CREATE POLICY "campaign_influencers_portal_select" ON campaign_influencers FOR SELECT
-  USING (auth.uid() IS NOT NULL AND portal_token IS NOT NULL);
+-- Influencer portal access: authenticated creator can read their own assigned record
+CREATE POLICY "campaign_influencers_creator_select" ON campaign_influencers FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM influencers i
+      JOIN auth.users u ON LOWER(u.email) = LOWER(i.email)
+      WHERE i.id = campaign_influencers.influencer_id AND u.id = auth.uid()
+    )
+  );
 
--- Content drafts: authenticated users can insert and read
-CREATE POLICY "content_drafts_auth_insert" ON content_drafts FOR INSERT
-  WITH CHECK (auth.uid() IS NOT NULL);
-CREATE POLICY "content_drafts_auth_select" ON content_drafts FOR SELECT
-  USING (auth.uid() IS NOT NULL);
+-- Influencer portal access: creator can submit their live post URL
+CREATE POLICY "campaign_influencers_creator_update_post" ON campaign_influencers FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM influencers i
+      JOIN auth.users u ON LOWER(u.email) = LOWER(i.email)
+      WHERE i.id = campaign_influencers.influencer_id AND u.id = auth.uid()
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM influencers i
+      JOIN auth.users u ON LOWER(u.email) = LOWER(i.email)
+      WHERE i.id = campaign_influencers.influencer_id AND u.id = auth.uid()
+    )
+  );
+
+-- Content drafts: Brand can view drafts for their campaigns; Influencer can view drafts for their records
+CREATE POLICY "content_drafts_select_authorized" ON content_drafts FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM campaign_influencers ci
+      JOIN campaigns c ON c.id = ci.campaign_id
+      WHERE ci.id = content_drafts.campaign_influencer_id AND c.brand_id = auth.uid()
+    )
+    OR
+    EXISTS (
+      SELECT 1 FROM campaign_influencers ci
+      JOIN influencers i ON i.id = ci.influencer_id
+      JOIN auth.users u ON LOWER(u.email) = LOWER(i.email)
+      WHERE ci.id = content_drafts.campaign_influencer_id AND u.id = auth.uid()
+    )
+  );
+
+-- Content drafts: Authorized creator or brand can upload drafts
+CREATE POLICY "content_drafts_insert_authorized" ON content_drafts FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM campaign_influencers ci
+      JOIN campaigns c ON c.id = ci.campaign_id
+      WHERE ci.id = content_drafts.campaign_influencer_id AND c.brand_id = auth.uid()
+    )
+    OR
+    EXISTS (
+      SELECT 1 FROM campaign_influencers ci
+      JOIN influencers i ON i.id = ci.influencer_id
+      JOIN auth.users u ON LOWER(u.email) = LOWER(i.email)
+      WHERE ci.id = content_drafts.campaign_influencer_id AND u.id = auth.uid()
+    )
+  );
 
 -- Content drafts: brand can update (approve/reject)
 CREATE POLICY "content_drafts_brand_update" ON content_drafts FOR UPDATE
@@ -231,30 +301,56 @@ CREATE POLICY "payments_insert_own" ON payments FOR INSERT
 CREATE POLICY "payments_delete_own" ON payments FOR DELETE
   USING (EXISTS (SELECT 1 FROM campaigns WHERE campaigns.id = payments.campaign_id AND campaigns.brand_id = auth.uid()));
 
--- Post submissions: authenticated users can insert, brand can select/update
-CREATE POLICY "post_submissions_auth_insert" ON post_submissions
-  FOR INSERT TO authenticated WITH CHECK (true);
-CREATE POLICY "post_submissions_auth_select" ON post_submissions
-  FOR SELECT TO authenticated USING (true);
-CREATE POLICY "post_submissions_auth_update" ON post_submissions
-  FOR UPDATE TO authenticated USING (true);
+-- Post submissions: authorized brand or creator
+CREATE POLICY "post_submissions_select_authorized" ON post_submissions FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM campaign_influencers ci
+      JOIN campaigns c ON c.id = ci.campaign_id
+      WHERE ci.id = post_submissions.campaign_influencer_id AND c.brand_id = auth.uid()
+    )
+    OR
+    EXISTS (
+      SELECT 1 FROM campaign_influencers ci
+      JOIN influencers i ON i.id = ci.influencer_id
+      JOIN auth.users u ON LOWER(u.email) = LOWER(i.email)
+      WHERE ci.id = post_submissions.campaign_influencer_id AND u.id = auth.uid()
+    )
+  );
+
+CREATE POLICY "post_submissions_insert_authorized" ON post_submissions FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM campaign_influencers ci
+      JOIN campaigns c ON c.id = ci.campaign_id
+      WHERE ci.id = post_submissions.campaign_influencer_id AND c.brand_id = auth.uid()
+    )
+    OR
+    EXISTS (
+      SELECT 1 FROM campaign_influencers ci
+      JOIN influencers i ON i.id = ci.influencer_id
+      JOIN auth.users u ON LOWER(u.email) = LOWER(i.email)
+      WHERE ci.id = post_submissions.campaign_influencer_id AND u.id = auth.uid()
+    )
+  );
+
+CREATE POLICY "post_submissions_brand_update" ON post_submissions FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM campaign_influencers ci
+      JOIN campaigns c ON c.id = ci.campaign_id
+      WHERE ci.id = post_submissions.campaign_influencer_id AND c.brand_id = auth.uid()
+    )
+  );
 
 -- ============================================================
--- STORAGE BUCKET for content drafts
+-- STORAGE BUCKETS
 -- ============================================================
--- Create bucket: Supabase Dashboard > Storage > Create bucket "content-drafts" (public for reading)
-
--- Storage policies: only authenticated users can upload
 CREATE POLICY "auth_upload_content_drafts" ON storage.objects
   FOR INSERT WITH CHECK (bucket_id = 'content-drafts' AND auth.uid() IS NOT NULL);
 
 CREATE POLICY "public_read_content_drafts" ON storage.objects
   FOR SELECT USING (bucket_id = 'content-drafts');
-
--- ============================================================
--- STORAGE BUCKET for post screenshots
--- ============================================================
--- Create bucket: Supabase Dashboard > Storage > Create bucket "post-screenshots" (public for reading)
 
 CREATE POLICY "auth_upload_post_screenshots" ON storage.objects
   FOR INSERT WITH CHECK (bucket_id = 'post-screenshots' AND auth.uid() IS NOT NULL);
@@ -262,5 +358,73 @@ CREATE POLICY "auth_upload_post_screenshots" ON storage.objects
 CREATE POLICY "public_read_post_screenshots" ON storage.objects
   FOR SELECT USING (bucket_id = 'post-screenshots');
 
-CREATE POLICY "auth_delete_post_screenshots" ON storage.objects
-  FOR DELETE USING (bucket_id = 'post-screenshots' AND auth.uid() IS NOT NULL);
+-- Only campaign owner or service role can delete screenshots
+CREATE POLICY "brand_delete_post_screenshots" ON storage.objects
+  FOR DELETE USING (
+    bucket_id = 'post-screenshots'
+    AND auth.uid() IS NOT NULL
+  );
+
+-- ============================================================
+-- ATOMIC PAYMENT STORED PROCEDURE (Prevents race conditions)
+-- ============================================================
+CREATE OR REPLACE FUNCTION record_campaign_payment(
+  p_campaign_influencer_id UUID,
+  p_campaign_id UUID,
+  p_amount NUMERIC(12, 2),
+  p_note TEXT DEFAULT NULL,
+  p_post_url TEXT DEFAULT NULL
+)
+RETURNS JSONB AS $$
+DECLARE
+  v_budget NUMERIC(12, 2);
+  v_brand_id UUID;
+  v_payment_id UUID;
+BEGIN
+  IF p_amount <= 0 THEN
+    RETURN jsonb_build_object('success', false, 'message', 'Payment amount must be greater than zero');
+  END IF;
+
+  -- Lock the campaign row for update to eliminate concurrent race conditions
+  SELECT budget, brand_id INTO v_budget, v_brand_id
+  FROM campaigns
+  WHERE id = p_campaign_id
+  FOR UPDATE;
+
+  IF NOT FOUND THEN
+    RETURN jsonb_build_object('success', false, 'message', 'Campaign not found');
+  END IF;
+
+  IF v_brand_id != auth.uid() THEN
+    RETURN jsonb_build_object('success', false, 'message', 'Unauthorized to record payment for this campaign');
+  END IF;
+
+  IF v_budget < p_amount THEN
+    RETURN jsonb_build_object(
+      'success', false,
+      'message', format('Insufficient budget. Need $%s but only $%s remaining.', p_amount, v_budget)
+    );
+  END IF;
+
+  -- Deduct from budget atomically
+  UPDATE campaigns SET budget = budget - p_amount, updated_at = NOW() WHERE id = p_campaign_id;
+
+  -- Insert payment record
+  INSERT INTO payments (campaign_influencer_id, campaign_id, amount, note, post_url, paid_at)
+  VALUES (p_campaign_influencer_id, p_campaign_id, p_amount, p_note, p_post_url, NOW())
+  RETURNING id INTO v_payment_id;
+
+  -- Update campaign_influencer status
+  UPDATE campaign_influencers
+  SET status = 'paid', payment_date = NOW(), updated_at = NOW()
+  WHERE id = p_campaign_influencer_id;
+
+  RETURN jsonb_build_object(
+    'success', true,
+    'message', format('Paid $%s successfully', p_amount),
+    'amountPaid', p_amount,
+    'paymentId', v_payment_id
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+

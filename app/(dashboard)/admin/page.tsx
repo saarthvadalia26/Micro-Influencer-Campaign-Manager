@@ -247,7 +247,7 @@ export default async function SuperAdminPage() {
                       </td>
                       <td className="py-3 pr-4 text-right">{b.totalInfluencers}</td>
                       <td className="py-3 pr-4 text-right text-muted-foreground">{formatCurrency(b.totalBudget)}</td>
-                      <td className="py-3 pr-4 text-right font-medium text-emerald-600">{formatCurrency(b.totalSpent)}</td>
+                      <td className="py-3 pr-4 text-right font-medium text-emerald-600 dark:text-emerald-400">{formatCurrency(b.totalSpent)}</td>
                       <td className="py-3 pr-4 text-right text-xs text-muted-foreground">
                         {format(new Date(b.created_at), 'MMM d, yyyy')}
                       </td>

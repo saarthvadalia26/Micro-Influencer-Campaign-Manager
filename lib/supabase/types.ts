@@ -23,7 +23,7 @@ export type Database = {
           full_name?: string | null
           company_name?: string | null
           avatar_url?: string | null
-          role?: 'brand' | 'admin' | 'super_admin'
+          role?: 'brand' | 'admin' | 'influencer' | 'super_admin'
           created_at?: string
         }
         Update: {
@@ -31,7 +31,7 @@ export type Database = {
           full_name?: string | null
           company_name?: string | null
           avatar_url?: string | null
-          role?: 'brand' | 'admin' | 'super_admin'
+          role?: 'brand' | 'admin' | 'influencer' | 'super_admin'
           created_at?: string
         }
       }
@@ -297,6 +297,18 @@ export type Database = {
           updated_at?: string
         }
       }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
     }
   }
 }

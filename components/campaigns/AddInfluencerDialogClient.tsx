@@ -10,11 +10,16 @@ import type { Influencer } from '@/lib/supabase/types'
 interface Props {
   campaignId: string
   influencers: Influencer[]
+  existingInfluencerIds?: string[]
 }
 
-export function AddInfluencerDialogClient({ campaignId, influencers }: Props) {
+export function AddInfluencerDialogClient({ campaignId, influencers, existingInfluencerIds = [] }: Props) {
   const router = useRouter()
   const supabase = createClient()
+
+  const availableInfluencers = influencers.filter(
+    (inf) => !existingInfluencerIds.includes(inf.id)
+  )
 
   const handleAdd = async (values: AddInfluencerFormValues) => {
     const { error } = await supabase.from('campaign_influencers').insert({
@@ -40,8 +45,9 @@ export function AddInfluencerDialogClient({ campaignId, influencers }: Props) {
   return (
     <AddInfluencerDialog
       campaignId={campaignId}
-      influencers={influencers}
+      influencers={availableInfluencers}
       onAdd={handleAdd}
     />
   )
 }
+
