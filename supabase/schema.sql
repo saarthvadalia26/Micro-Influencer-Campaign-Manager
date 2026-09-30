@@ -178,8 +178,11 @@ ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE post_submissions ENABLE ROW LEVEL SECURITY;
 
 -- Profiles: users manage their own
+DROP POLICY IF EXISTS "profiles_select_own" ON profiles;
 CREATE POLICY "profiles_select_own" ON profiles FOR SELECT USING (auth.uid() = id);
+DROP POLICY IF EXISTS "profiles_insert_own" ON profiles;
 CREATE POLICY "profiles_insert_own" ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
+DROP POLICY IF EXISTS "profiles_update_own" ON profiles;
 CREATE POLICY "profiles_update_own" ON profiles FOR UPDATE USING (auth.uid() = id);
 
 -- Prevent unauthorized role escalation via profile update
@@ -202,28 +205,41 @@ CREATE TRIGGER trigger_protect_profile_role
   FOR EACH ROW EXECUTE PROCEDURE protect_profile_role();
 
 -- Campaigns: brands see only their own
+DROP POLICY IF EXISTS "campaigns_select_own" ON campaigns;
 CREATE POLICY "campaigns_select_own" ON campaigns FOR SELECT USING (auth.uid() = brand_id);
+DROP POLICY IF EXISTS "campaigns_insert_own" ON campaigns;
 CREATE POLICY "campaigns_insert_own" ON campaigns FOR INSERT WITH CHECK (auth.uid() = brand_id);
+DROP POLICY IF EXISTS "campaigns_update_own" ON campaigns;
 CREATE POLICY "campaigns_update_own" ON campaigns FOR UPDATE USING (auth.uid() = brand_id);
+DROP POLICY IF EXISTS "campaigns_delete_own" ON campaigns;
 CREATE POLICY "campaigns_delete_own" ON campaigns FOR DELETE USING (auth.uid() = brand_id);
 
 -- Influencers: brands see only their own
+DROP POLICY IF EXISTS "influencers_select_own" ON influencers;
 CREATE POLICY "influencers_select_own" ON influencers FOR SELECT USING (auth.uid() = brand_id);
+DROP POLICY IF EXISTS "influencers_insert_own" ON influencers;
 CREATE POLICY "influencers_insert_own" ON influencers FOR INSERT WITH CHECK (auth.uid() = brand_id);
+DROP POLICY IF EXISTS "influencers_update_own" ON influencers;
 CREATE POLICY "influencers_update_own" ON influencers FOR UPDATE USING (auth.uid() = brand_id);
+DROP POLICY IF EXISTS "influencers_delete_own" ON influencers;
 CREATE POLICY "influencers_delete_own" ON influencers FOR DELETE USING (auth.uid() = brand_id);
 
 -- Campaign influencers: via campaign ownership
+DROP POLICY IF EXISTS "campaign_influencers_select_own" ON campaign_influencers;
 CREATE POLICY "campaign_influencers_select_own" ON campaign_influencers FOR SELECT
   USING (EXISTS (SELECT 1 FROM campaigns WHERE campaigns.id = campaign_influencers.campaign_id AND campaigns.brand_id = auth.uid()));
+DROP POLICY IF EXISTS "campaign_influencers_insert_own" ON campaign_influencers;
 CREATE POLICY "campaign_influencers_insert_own" ON campaign_influencers FOR INSERT
   WITH CHECK (EXISTS (SELECT 1 FROM campaigns WHERE campaigns.id = campaign_influencers.campaign_id AND campaigns.brand_id = auth.uid()));
+DROP POLICY IF EXISTS "campaign_influencers_update_own" ON campaign_influencers;
 CREATE POLICY "campaign_influencers_update_own" ON campaign_influencers FOR UPDATE
   USING (EXISTS (SELECT 1 FROM campaigns WHERE campaigns.id = campaign_influencers.campaign_id AND campaigns.brand_id = auth.uid()));
+DROP POLICY IF EXISTS "campaign_influencers_delete_own" ON campaign_influencers;
 CREATE POLICY "campaign_influencers_delete_own" ON campaign_influencers FOR DELETE
   USING (EXISTS (SELECT 1 FROM campaigns WHERE campaigns.id = campaign_influencers.campaign_id AND campaigns.brand_id = auth.uid()));
 
 -- Influencer portal access: authenticated creator can read their own assigned record
+DROP POLICY IF EXISTS "campaign_influencers_creator_select" ON campaign_influencers;
 CREATE POLICY "campaign_influencers_creator_select" ON campaign_influencers FOR SELECT
   USING (
     EXISTS (
@@ -234,6 +250,7 @@ CREATE POLICY "campaign_influencers_creator_select" ON campaign_influencers FOR 
   );
 
 -- Influencer portal access: creator can submit their live post URL
+DROP POLICY IF EXISTS "campaign_influencers_creator_update_post" ON campaign_influencers;
 CREATE POLICY "campaign_influencers_creator_update_post" ON campaign_influencers FOR UPDATE
   USING (
     EXISTS (
@@ -251,6 +268,7 @@ CREATE POLICY "campaign_influencers_creator_update_post" ON campaign_influencers
   );
 
 -- Content drafts: Brand can view drafts for their campaigns; Influencer can view drafts for their records
+DROP POLICY IF EXISTS "content_drafts_select_authorized" ON content_drafts;
 CREATE POLICY "content_drafts_select_authorized" ON content_drafts FOR SELECT
   USING (
     EXISTS (
@@ -268,6 +286,7 @@ CREATE POLICY "content_drafts_select_authorized" ON content_drafts FOR SELECT
   );
 
 -- Content drafts: Authorized creator or brand can upload drafts
+DROP POLICY IF EXISTS "content_drafts_insert_authorized" ON content_drafts;
 CREATE POLICY "content_drafts_insert_authorized" ON content_drafts FOR INSERT
   WITH CHECK (
     EXISTS (
@@ -285,6 +304,7 @@ CREATE POLICY "content_drafts_insert_authorized" ON content_drafts FOR INSERT
   );
 
 -- Content drafts: brand can update (approve/reject)
+DROP POLICY IF EXISTS "content_drafts_brand_update" ON content_drafts;
 CREATE POLICY "content_drafts_brand_update" ON content_drafts FOR UPDATE
   USING (EXISTS (
     SELECT 1 FROM campaign_influencers ci
@@ -293,22 +313,29 @@ CREATE POLICY "content_drafts_brand_update" ON content_drafts FOR UPDATE
   ));
 
 -- Analytics: brand can see and update own campaigns
+DROP POLICY IF EXISTS "analytics_select_own" ON campaign_analytics;
 CREATE POLICY "analytics_select_own" ON campaign_analytics FOR SELECT
   USING (EXISTS (SELECT 1 FROM campaigns WHERE campaigns.id = campaign_analytics.campaign_id AND campaigns.brand_id = auth.uid()));
+DROP POLICY IF EXISTS "analytics_insert_own" ON campaign_analytics;
 CREATE POLICY "analytics_insert_own" ON campaign_analytics FOR INSERT
   WITH CHECK (EXISTS (SELECT 1 FROM campaigns WHERE campaigns.id = campaign_analytics.campaign_id AND campaigns.brand_id = auth.uid()));
+DROP POLICY IF EXISTS "analytics_update_own" ON campaign_analytics;
 CREATE POLICY "analytics_update_own" ON campaign_analytics FOR UPDATE
   USING (EXISTS (SELECT 1 FROM campaigns WHERE campaigns.id = campaign_analytics.campaign_id AND campaigns.brand_id = auth.uid()));
 
 -- Payments: brand can manage payments for own campaigns
+DROP POLICY IF EXISTS "payments_select_own" ON payments;
 CREATE POLICY "payments_select_own" ON payments FOR SELECT
   USING (EXISTS (SELECT 1 FROM campaigns WHERE campaigns.id = payments.campaign_id AND campaigns.brand_id = auth.uid()));
+DROP POLICY IF EXISTS "payments_insert_own" ON payments;
 CREATE POLICY "payments_insert_own" ON payments FOR INSERT
   WITH CHECK (EXISTS (SELECT 1 FROM campaigns WHERE campaigns.id = payments.campaign_id AND campaigns.brand_id = auth.uid()));
+DROP POLICY IF EXISTS "payments_delete_own" ON payments;
 CREATE POLICY "payments_delete_own" ON payments FOR DELETE
   USING (EXISTS (SELECT 1 FROM campaigns WHERE campaigns.id = payments.campaign_id AND campaigns.brand_id = auth.uid()));
 
 -- Post submissions: authorized brand or creator
+DROP POLICY IF EXISTS "post_submissions_select_authorized" ON post_submissions;
 CREATE POLICY "post_submissions_select_authorized" ON post_submissions FOR SELECT
   USING (
     EXISTS (
@@ -325,6 +352,7 @@ CREATE POLICY "post_submissions_select_authorized" ON post_submissions FOR SELEC
     )
   );
 
+DROP POLICY IF EXISTS "post_submissions_insert_authorized" ON post_submissions;
 CREATE POLICY "post_submissions_insert_authorized" ON post_submissions FOR INSERT
   WITH CHECK (
     EXISTS (
@@ -341,6 +369,7 @@ CREATE POLICY "post_submissions_insert_authorized" ON post_submissions FOR INSER
     )
   );
 
+DROP POLICY IF EXISTS "post_submissions_brand_update" ON post_submissions;
 CREATE POLICY "post_submissions_brand_update" ON post_submissions FOR UPDATE
   USING (
     EXISTS (
@@ -353,19 +382,24 @@ CREATE POLICY "post_submissions_brand_update" ON post_submissions FOR UPDATE
 -- ============================================================
 -- STORAGE BUCKETS
 -- ============================================================
+DROP POLICY IF EXISTS "auth_upload_content_drafts" ON storage.objects;
 CREATE POLICY "auth_upload_content_drafts" ON storage.objects
   FOR INSERT WITH CHECK (bucket_id = 'content-drafts' AND auth.uid() IS NOT NULL);
 
+DROP POLICY IF EXISTS "public_read_content_drafts" ON storage.objects;
 CREATE POLICY "public_read_content_drafts" ON storage.objects
   FOR SELECT USING (bucket_id = 'content-drafts');
 
+DROP POLICY IF EXISTS "auth_upload_post_screenshots" ON storage.objects;
 CREATE POLICY "auth_upload_post_screenshots" ON storage.objects
   FOR INSERT WITH CHECK (bucket_id = 'post-screenshots' AND auth.uid() IS NOT NULL);
 
+DROP POLICY IF EXISTS "public_read_post_screenshots" ON storage.objects;
 CREATE POLICY "public_read_post_screenshots" ON storage.objects
   FOR SELECT USING (bucket_id = 'post-screenshots');
 
 -- Only campaign owner or service role can delete screenshots
+DROP POLICY IF EXISTS "brand_delete_post_screenshots" ON storage.objects;
 CREATE POLICY "brand_delete_post_screenshots" ON storage.objects
   FOR DELETE USING (
     bucket_id = 'post-screenshots'
